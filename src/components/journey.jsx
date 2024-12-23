@@ -1,6 +1,5 @@
 import React from 'react'
 import '../styles/journey.css'
-import Flower from './flower'
 import CallMe from './CallMe'
 import ContactMe from './ContactMe'
 
