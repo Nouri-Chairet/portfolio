@@ -26,10 +26,11 @@ const Stars = (props) => {
 }
 const StarsCanvas=({number})=>{
     return(
-    <div className='stars'>
+    
         <Canvas
             camera={{position:[0,0,1]}}
             gl={{preserveDrawingBuffer:true}}
+            style={{ position: "absolute", height: "100vh", minWidth: "100vh",left:0,top:0 }}
         >
             <Suspense>
 
@@ -38,7 +39,7 @@ const StarsCanvas=({number})=>{
             <Preload all/>
         </Canvas>
             
-    </div>
+   
     )
 
 }

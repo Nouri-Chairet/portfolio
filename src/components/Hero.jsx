@@ -171,8 +171,8 @@ export default function Hero() {
             </div>
 
             <div className={finish ? "inv" : "hero-right"}>
-                <div style={{ position: "absolute", height: "100vh", width: "170vh" }}>
-                    <Stars number={1900} />
+                <div style={{ height: "100vh", width: "70vh"}}>
+                    <Stars number={1000} />
                 </div>
                 <div ref={imgRef} className="hero-img" >
                     <img src={star} alt="star" />
@@ -180,8 +180,7 @@ export default function Hero() {
 
                 <div className="modal-container">
                     <Model
-                        url="/models/costume_launch.glb"
-                        animationUrl="/models/model.glb"
+                       
                         finish={active}
                     />
                 </div>
