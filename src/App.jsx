@@ -9,12 +9,6 @@ import { useGLTF } from '@react-three/drei';
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
-  useEffect(() => {
-    useGLTF.preload('/models/call_me.glb');
-    useGLTF.preload('/models/ufo.glb');
-    useGLTF.preload('/models/dancing.glb');
-    useGLTF.preload('/models/costume_launch.glb');
-  },[]);
   const pan1=React.useRef();
   const pan2=React.useRef();
   const pan3=React.useRef();
