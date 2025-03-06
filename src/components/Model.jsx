@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import * as THREE from "three";
 
+
 gsap.registerPlugin(MotionPathPlugin, ScrollTrigger);
 
 const Avatar = ({ models,scale }) => {
