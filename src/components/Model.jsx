@@ -11,6 +11,17 @@ import * as THREE from "three";
 gsap.registerPlugin(MotionPathPlugin, ScrollTrigger);
 
 const Avatar = ({ models,scale }) => {
+    let deviationY = 0;
+    switch (scale) {
+        case 0.8:
+            deviationY = -1;
+            break;
+        case 0.9:
+            deviationY = -0.5;
+            break;
+        default:
+            break;
+    }
     const { mainModel,  danceModel } = models;
     const [music] = useState(() => new Audio("/Bassthoven (Animated Music Video w_ _King Science )(MP3_320K).mp3")); // Replace with your actual music path
     const { scene: mainScene, animations: mainAnimations } = mainModel;
@@ -53,7 +64,6 @@ const Avatar = ({ models,scale }) => {
                 action.paused = false;
                 action.play();
                 action.getMixer().addEventListener("finished", () => {
-                    console.log("Animation finished");
                     action.paused = true;
                 });
             }, 2200);
@@ -78,7 +88,11 @@ const Avatar = ({ models,scale }) => {
             danceActions[Object.keys(danceActions)[0]].stop();
             return;
         }
-        if (mainActions[Object.keys(mainActions)[0]].paused) {
+      
+        if (!mainActions[Object.keys(mainActions)[0]].paused) {
+            mainActions[Object.keys(mainActions)[0]].paused = true;
+        }
+        else{
             music.play().then(() => {
                 console.log("Music playing");
             });
@@ -95,21 +109,19 @@ const Avatar = ({ models,scale }) => {
             mainActions[Object.keys(mainActions)[0]].paused = false;
             setActive(true);
             setCurrentScene(danceScene);
-           
+            danceActions[Object.keys(danceActions)[0]].paused = false;
             danceActions[Object.keys(danceActions)[0]].play();
          
-        } else {
-            mainActions[Object.keys(mainActions)[0]].paused = true;
-        }
+        } 
     }, [active, mainActions, danceActions, music, mainScene, danceScene]);
 
    
 
     const zigzagPoints = [
-        { x: -10, y: -2.4, z: -100 },
-        { x: -5, y: -1.4, z: -12 },
-        { x: 5, y: -0.4, z: -10 },
-        { x: 0, y: 0, z: 0 },
+        { x: -10, y: -2.4+deviationY, z: -100 },
+        { x: -5, y: -1.4+deviationY, z: -12 },
+        { x: 5, y: -0.4+deviationY, z: -10 },
+        { x: 0, y: -0+deviationY, z: 0 },
     ];
 
     useEffect(() => {
@@ -128,7 +140,7 @@ const Avatar = ({ models,scale }) => {
             object={currentScene === mainScene ? mainScene : danceScene}
             ref={modelRef}
             scale={5*scale}
-            position={[0, 0, 0]}
+            position={[0, deviationY, 0]}
             onClick={handleClick}
         />
     );
@@ -201,7 +213,7 @@ const Model = ({finish }) => {
 
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 600) setScale(0.5);
+            if (window.innerWidth < 600) setScale(0.9);
             else if (window.innerWidth < 1024) setScale(0.8); 
             else setScale(1); 
         };

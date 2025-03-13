@@ -7,12 +7,10 @@ const Journey = () => {
 
   return (
     <div className='journey-container'>
-      {/* <Flower /> */}
       <div className='journey-center'>
         <ContactMe />
       </div>
       <div className='journey-right'>
-
       <CallMe />
       </div>
     </div>

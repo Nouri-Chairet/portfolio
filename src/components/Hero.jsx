@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import "../styles/hero.css";
-import "../styles/hero.scss";
+import "../styles/heroBubble.css";
 import Model from "./Model";
 import { TextPlugin } from "gsap/TextPlugin";
 import Stars from "./Stars";
@@ -178,16 +178,15 @@ export default function Hero() {
                     <img src={star} alt="star" />
                 </div>
 
-                <div className="modal-container">
                     <Model
                        
                         finish={active}
                     />
-                </div>
+
 
                 <div className="hero-intro">
                     {active2 ? <></> :
-                        <div className={active2 ? "" : "bubble shadow large bottom"} onClick={handleClick} ref={textRef}>
+                        <div className={active2 ? "" : "bubble"} onClick={handleClick} ref={textRef}>
                             {text === Texts[0] ? text : ""}
                         </div>
                     }

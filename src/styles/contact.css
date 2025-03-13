@@ -1,10 +1,8 @@
 .contact-container{
     background-color: rgba(211, 57, 57, 0);
-
     backdrop-filter: blur(6px);
-    width: 120vw;
-    position: absolute;
-    height: 90vh;
+    width: 60vw;
+    height: 80vh;
     margin-left: 10vw;
     margin-right: 10vw;
     border-radius: 2rem;
@@ -51,3 +49,41 @@
     align-items: center;
     gap: 20px;
 }
+@media (max-width: 768px) {
+    .contact-content{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+
+    }
+    .contact-container{
+        width: 100vw;
+        margin-left: 0;
+        margin-right: 0;
+        height: 30vh;
+    }
+    .contact-title{
+        font-size: 2.4rem;
+    }
+    .contact-text{
+        font-size: 1.1rem;
+        padding: 0;
+    }
+  
+    .contact-links{
+       padding: 0;
+    }
+    .github{
+        max-width: 54px;
+        max-height: 54px;
+    }
+    .linkedin{
+        max-width: 72px;
+        max-height: 72px;
+    }
+    
+}
+
+
+

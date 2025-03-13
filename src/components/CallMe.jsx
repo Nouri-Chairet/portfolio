@@ -16,14 +16,12 @@ const Base = ({ model }) => {
   const action = actions[Object.keys(actions)[0]];
 
   const baseRef = useRef();
-
-  // Ensure the animation starts paused and loops once
   useEffect(() => {
     if (action) {
         action.setLoop(THREE.LoopOnce);
-        action.reset();  // Reset animation state
-      action.play();   // Play animation
-      action.paused = true; // Start paused
+        action.reset();  
+      action.play(); 
+      action.paused = true; 
       action.clampWhenFinished = true;
 
     }
@@ -48,15 +46,15 @@ const Base = ({ model }) => {
     });
 
     return () => {
-      ScrollTrigger.killAll(); // Cleanup ScrollTriggers
+      ScrollTrigger.killAll(); 
     };
   }, [action]);
 
-  // Reactivate the animation on click
+
   const handleClick = () => {
     if (action) {
-      action.reset(); // Reset animation state
-      action.paused = false; // Play animation
+      action.reset();
+      action.paused = false;
       action.play();
     }
   };
@@ -66,9 +64,9 @@ const Base = ({ model }) => {
       object={scene}
       ref={baseRef}
       scale={2.4}
-      position={[-1.1, -2, 0]}
+      position={[0, -2.7, 1.3]}
       rotation={[0, -Math.PI/100, 0]}
-      onClick={handleClick} // Reactivate animation on click
+      onClick={handleClick} 
     />
   );
 };
@@ -81,12 +79,11 @@ const CallMe = () => {
       <Canvas
         shadows
         gl={{ preserveDrawingBuffer: true }}
-        style={{ height: '100%', width: '100%' }}
         camera={{ position: [0, 1, 5] }}
       >
         <directionalLight
           position={[0, 7, 6]}
-          intensity={2.3} // Adjust brightness
+          intensity={2.3} 
           castShadow
         />
         <ambientLight intensity={1} />
