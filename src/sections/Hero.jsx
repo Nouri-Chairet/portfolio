@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import "../styles/hero.css";
 import "../styles/heroBubble.css";
-import Model from "./Model";
+import Model from "../components/Model";
 import { TextPlugin } from "gsap/TextPlugin";
-import Stars from "./Stars";
+import Stars from "../components/Stars";
 import star from "/star.svg";
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 

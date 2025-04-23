@@ -1,7 +1,7 @@
 import React from 'react'
 import '../styles/journey.css'
-import CallMe from './CallMe'
-import ContactMe from './ContactMe'
+import CallMe from '../components/CallMe'
+import ContactMe from '../components/ContactMe'
 
 const Journey = () => {
 

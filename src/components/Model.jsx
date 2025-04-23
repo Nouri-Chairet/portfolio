@@ -201,9 +201,9 @@ const Base = ({ scene ,scale}) => {
 };
 
 const Model = ({finish }) => {
-    const mainModel = useGLTF('/models/costume_launch.glb');
-    const danceModel = useGLTF('/models/dancing.glb');
-    const baseModel = useGLTF('/models/ufo.glb',true);
+    const mainModel = useGLTF('https://ucarecdn.com/c885f65b-9af1-4a30-8b59-0d31cf81df10/costume_launch.glb');
+    const danceModel = useGLTF('https://ucarecdn.com/d1486611-3f2e-4439-ae72-b89b1f5fbc5b/dancing.glb');
+    const baseModel = useGLTF('https://ucarecdn.com/c62bb758-4647-431e-81f1-b088aac4707f/ufo.glb',true);
     const models = {
         mainModel,
         danceModel,
