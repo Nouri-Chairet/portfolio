@@ -19,8 +19,6 @@ function App() {
   return (
 
     <Suspense fallback={<Loader />}>
-    
-      
 
       <div ref={pan1} className="panel">
         <Hero />

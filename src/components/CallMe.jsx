@@ -72,7 +72,7 @@ const Base = ({ model }) => {
 };
 
 const CallMe = () => {
-  const baseModel = useGLTF('https://ucarecdn.com/94e55700-d8c1-4c7b-89f4-7ecff87fede5/call_me.glb', true);
+  const baseModel = useGLTF('/call_me-compressed.glb', true);
 
   return (
     <div className="nouri">
