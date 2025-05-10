@@ -7,6 +7,7 @@ import { TextPlugin } from "gsap/TextPlugin";
 import Stars from "../components/Stars";
 import star from "/star.svg";
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useNavigate } from "react-router-dom";
 
 gsap.registerPlugin(ScrollTrigger);
 gsap.registerPlugin(TextPlugin);
@@ -17,12 +18,10 @@ export default function Hero() {
         "I am currently a student at the Higher Institute of Science and Technology of Sousse,Tunisia.",
         "Where I am pursuing a degree in Software Engineering.",
         "I am a self-taught developer who loves to learn new technologies and build projects that make a difference.",
-        
         "I am familiar with several programming languages and frameworks.",
-        "These include Express.js, React, and React Native.",
-        "I also have experience with MongoDB and some knowledge of SQL and Python.",
-        "One of my notable projects is a chess game that I built from scratch using the MERN stack.",
-
+        "These include Express.js, React and Django .",
+        "I also have experience with MongoDB and some knowledge of SQL ",
+        "Click the button in the top right corner too see my projects .",
         "As a reward for your patience, I will show you a little dance.",
         "Click on the model"
     ];
@@ -102,7 +101,7 @@ export default function Hero() {
                 { y: 0, rotation: 0 },
                 {
                     rotation: 960,
-                    y: 20,
+                    y: 920,
                     duration: 3,
                     scrollTrigger: {
                         trigger: ".hero",
@@ -121,7 +120,7 @@ export default function Hero() {
                     
                 } ,{
                     x:390,
-                    y:-130,
+                    y:130,
                     scale:0.4,
                     scrollTrigger: {
                         trigger: ".hero",
@@ -134,7 +133,7 @@ export default function Hero() {
                 });
                 gsap.to(".hero-name",{
                     x:0,
-                    y:-300,
+                    y:300,
 
                     scale:0.8,
                     scrollTrigger: {
@@ -147,7 +146,7 @@ export default function Hero() {
                 }); 
                 gsap.to(".hero-welcome",{
                     x:0,
-                    y:-300,
+                    y:300,
 
                     scale:0.8,
                     scrollTrigger: {
@@ -160,7 +159,7 @@ export default function Hero() {
                 }); 
 
     }, []);
-
+    const navigate =useNavigate();
 
 
     return (
@@ -171,7 +170,8 @@ export default function Hero() {
             </div>
 
             <div className={finish ? "inv" : "hero-right"}>
-                <div style={{ height: "100vh", width: "70vh"}}>
+            <button onClick={()=>{navigate('/projects')}} className="hero-btn" >View Projects</button>
+                <div style={{ height: "00vh", width: "70vh"}}>
                     <Stars number={1000} />
                 </div>
                 <div ref={imgRef} className="hero-img" >

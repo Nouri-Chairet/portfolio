@@ -19,6 +19,11 @@ const ContactMe = () => {
     <a href='https://github.com/Nouri-Chairet' target='_blank' rel='noopener noreferrer'>
       <img src={githubIcon} alt='GitHub' className="github" height={70} />
     </a>
+    <a href='/Resume_Nouri.pdf' download='Resume_Nouri.pdf'>
+    
+    <button className='contact-button' ><p className='contact-button-text'>My Resume</p></button>
+    
+    </a>
 
   </div>
   </div>

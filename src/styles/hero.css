@@ -1,21 +1,23 @@
-*{
-    margin: 0;
-    padding: 0;
-    scroll-behavior: smooth;
-    overflow-x: hidden;
 
 
+.hero-btn{
+    background: transparent;
+    color: var(--color-primary);
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    border: 2px dashed var(--color-primary);
+    transition: all 0.9s ease-in-out;
+    position: absolute;
+    top:10vh;
+    right:5vw;
+    z-index: 2;
 }
-nav{
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-
-    padding: 1rem 10rem;
-    background: var(--color-primary);
-    position: absolute  ;
-    top: 0;
-    left: -10%;
+.hero-btn:hover{
+  border: 2px solid var(--color-primary);
 }
 li{
     display: inline;

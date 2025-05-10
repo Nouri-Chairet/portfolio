@@ -84,6 +84,29 @@
     }
     
 }
+.contact-button{
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px dashed #ffffff;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.5);
+}
+.contact-button:hover{
+    background-color: #05101b;
+    color: #ffffff;
+}
+.contact-button-text{
+    transition: all 0.3s ease;
+}
+.contact-button-text:hover{
+    font-size: 1.56rem;
+}
+
 
 
 
