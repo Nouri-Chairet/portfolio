@@ -14,7 +14,7 @@ const SpaceCard = ({url,ProjectName,link="#",description,date=2023}) => {
       <h3>{description}</h3>
       <h4 >{link==""?<></>:<a href={link} className='link-header'>visit here !</a>}</h4>
 
- </>:   <> <img src={url} alt="" className="image" />
+ </>:   <> <img src={url} alt="" className="image" loading="lazy" />
         <div className="heading"></div>
         <h2>{ProjectName}</h2>
         <h3>Created at : {date}</h3>

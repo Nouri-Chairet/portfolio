@@ -4,33 +4,31 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "assets": "npm run assets:character && npm run assets:ufo && npm run assets:images",
+    "assets:character": "node scripts/merge-character.mjs --looks launch",
+    "assets:images": "node scripts/convert-images.mjs",
+    "assets:inspect": "gltf-transform inspect public/character.glb && gltf-transform inspect public/ufo.glb",
+    "assets:ufo": "node scripts/optimize-ufo.mjs",
     "build": "vite build",
+    "dev": "vite",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@react-three/drei": "^9.117.2",
     "@react-three/fiber": "^8.17.10",
-    "@types/node": "^22.14.1",
     "@vercel/speed-insights": "^1.1.0",
-    "antd": "^5.22.3",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "framer-motion": "^12.5.0",
-    "gltf-pipeline": "^4.1.0",
     "gsap": "^3.13.0",
     "lottie-react": "^2.4.1",
-    "portfolio": "file:",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-icons": "^5.5.0",
     "react-router-dom": "^7.6.0",
     "styled-components": "^6.1.17",
     "three": "^0.170.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@gltf-transform/cli": "^4.5.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
@@ -39,6 +37,8 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.11.0",
+    "gltf-pipeline": "^4.1.0",
+    "rollup-plugin-visualizer": "^7.0.1",
     "vite": "^5.4.10"
   }
 }

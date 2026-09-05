@@ -1,7 +1,7 @@
 import React from 'react'
 import '../styles/contact.css'
 import githubIcon from '../assets/github_logo.svg'
-import linkedinIcon from '../assets/linkedin.png'
+import linkedinIcon from '../assets/linkedin.webp'
 const ContactMe = () => {
   return (
     <div className='contact-container'>
@@ -12,7 +12,7 @@ const ContactMe = () => {
   <p className='contact-text'>You can reach me at my email: <br/> nouric576@gmail.com</p>
   <div className='contact-links'>
     <a href='https://www.linkedin.com/in/nouri-ch-554021266/' target='_blank' rel='noopener noreferrer'>
-      <img src={linkedinIcon} alt='LinkedIn' className='linkedin' height={110} />
+      <img src={linkedinIcon} alt='LinkedIn' className='linkedin' height={110} loading='lazy' />
     </a>
     
 

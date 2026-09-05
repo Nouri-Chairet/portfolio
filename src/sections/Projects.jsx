@@ -5,9 +5,9 @@ import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import SpaceCard from '../components/ui/SpaceCard';
 gsap.registerPlugin(ScrollTrigger);
-import chess from '/chess.png'
-import car from '/car.png'
-import school from '/edu.png'
+import chess from '/chess.webp'
+import car from '/car.webp'
+import school from '/edu.webp'
 import Lottie from 'lottie-react';
 import lottieBg from '../assets/lottie.json';
 import { useNavigate } from 'react-router-dom';

@@ -1,0 +1,108 @@
+You are working in an existing Vite + React portfolio repo.
+
+Codebase context (important):
+- Entry/routing: src/main.jsx uses react-router-dom with:
+  - "/" → <App />
+  - "/projects" → lazy import of src/sections/Projects.jsx
+- Hero button currently navigates to "/projects" (src/sections/Hero.jsx).
+- App layout: src/App.jsx renders <Hero /> then <Journey /> inside .panel wrappers (src/App.css sets .panel height: 100vh).
+- Current Projects page: src/sections/Projects.jsx (imports lottie-react + src/assets/lottie.json + src/styles/Projects.css + SpaceCard).
+
+Goal:
+1) Remove the separate “Projects” page/route and integrate Projects as a section directly UNDER the Hero section on the homepage (same scroll flow).
+2) Replace the old projects list with ONLY the projects provided below.
+3) Display projects as a CENTER “tree” (timeline/trunk) where each YEAR is a root node on the trunk.
+4) Scroll animation: when the user scrolls and an item reaches the trigger point, a BRANCH should “open” from the CENTER of the page (the trunk) outward to reveal a project card containing the description.
+
+New projects to use (ONLY these):
+- Café Ordering Platform — 2026
+  Stack: Next.js 14, TypeScript, Tailwind CSS, Supabase, Vercel
+  Description:
+  - Conçu et déployé une application de commande mobile-first en production : les clients scannent un QR code par table pour consulter le menu et passer commande, tandis que les serveurs reçoivent les commandes en temps réel sur un tableau de bord personnel.
+  - Développé un système configurable de composition de pizza (taille, ingrédients).
+  - Implémenté un moteur de réductions dynamique et un panneau d’administration complet.
+  - Intégré des analytics quotidiens automatisés pour le suivi des ventes.
+  - Déployé sur Vercel avec un backend Supabase (Auth, Postgres, Realtime).
+
+- Application de Gestion des PFE – Projet Académique — 2026
+  Stack: Django, TypeScript, React
+  - Développé une application web fullstack pour automatiser la gestion des projets de fin d’études.
+  - Implémenté des interfaces dédiées aux rôles étudiant, enseignant et administrateur.
+  - Conçu des algorithmes de planification des soutenances.
+  - Réalisé un frontend responsive orienté ergonomie et efficacité de gestion.
+
+- Système de E-Learning – Projet Personnel — 2026
+  Stack: Next.js, TypeScript, Django, Redux, Django Channels
+  - Développé une plateforme éducative fullstack pour la création de cours et de leçons multimédias.
+  - Implémenté des tableaux de bord par rôle : Admin, Enseignant, Étudiant.
+  - Sécurisé l’authentification et géré l’état applicatif avec Redux.
+  - Intégré des forums communautaires en temps réel avec WebSockets via Django Channels.
+
+- Système de Gestion Scolaire — 2025
+  Stack: Django, React, Material UI, PostgreSQL, Google Cloud Storage
+  - Conçu une application web avec interfaces spécifiques pour étudiants, enseignants et administrateurs.
+  - Développé des fonctionnalités de suivi des présences et de diffusion d’annonces.
+  - Implémenté l’upload sécurisé de fichiers PDF.
+  - Utilisé PostgreSQL et Google Cloud Storage pour la gestion des données et documents.
+
+- Jeu d’Échecs Fullstack — 2024
+  Stack: React, Express.js, MongoDB, Three.js, WebSocket, JWT
+  - Conçu un jeu d’échecs fullstack avec authentification sécurisée par JWT.
+  - Intégré des modèles 3D flottants avec Three.js pour enrichir l’expérience utilisateur.
+  - Mis en place une communication temps réel via WebSocket.
+  - Structuré l’application autour d’une architecture frontend/backend claire et maintenable.
+
+Implementation requirements:
+- Create a new section component, e.g. src/sections/ProjectsTree.jsx, and a dedicated CSS file, e.g. src/styles/projectsTree.css.
+- Insert this new section in src/App.jsx directly after <Hero /> and before <Journey />.
+- Update src/sections/Hero.jsx:
+  - Remove useNavigate and the navigate('/projects') behavior.
+  - Make the “View Projects” button scroll to the new section (id="projects") via scrollIntoView({ behavior: 'smooth' }).
+- Remove the Projects page route:
+  - In src/main.jsx remove the lazy Projects import and the <Route path="/projects" .../>.
+  - Option A (preferred): remove react-router-dom usage entirely and just render <App /> (no BrowserRouter/Routes).
+  - Option B: keep BrowserRouter but only route "/".
+- Update layout so the Projects section can be taller than 100vh without breaking flow:
+  - Change .panel in src/App.css from height: 100vh to min-height: 100vh (and allow auto height), or don’t wrap ProjectsTree in a .panel.
+- Animation:
+  - Use existing gsap + ScrollTrigger (already installed) OR IntersectionObserver (there is an existing hook src/hooks/useInView.js).
+  - Each project card starts hidden (opacity:0, slight translate).
+  - Each branch line starts “closed” (scaleX: 0) with transform-origin at the trunk center.
+  - On scroll trigger, animate:
+    1) branch line scaleX 0 → 1 (looks like it grows from center),
+    2) then reveal the card (fade + slide).
+  - Support prefers-reduced-motion: if reduced motion, show everything without animation.
+- Tree layout spec:
+  - A vertical trunk centered (x = 50%).
+  - Each YEAR is a “root” node (circle/pill) on the trunk displaying the year.
+  - Under each year node, render that year’s projects as branches to cards (alternate left/right for readability).
+  - Branch starts at trunk center and extends horizontally to the card.
+- Keep the rest of the site behavior unchanged.
+
+Code guidance (GSAP sketch):
+- In ProjectsTree.jsx, after render:
+  - select each .tree-item and animate its .branch and .card with ScrollTrigger:
+    - trigger: tree-item
+    - start: "top 70%" (tweak)
+    - toggleActions: "play none none reverse" (or play once)
+- CSS:
+  - .trunk: position:absolute; left:50%; width:2px; top:0; bottom:0;
+  - .branch: height:2px; transform: scaleX(0); (origin depends on side)
+  - .card: opacity:0; transform: translateX(±24px);
+  - .tree-item.is-visible (optional) to handle non-GSAP fallback.
+
+Cleanup (optional but good):
+- If src/sections/Projects.jsx is no longer used, delete it and remove its CSS usage.
+- lottie-react and src/assets/lottie.json are only used by old Projects page; remove if unused.
+- If react-router-dom is removed, update vite.config.js manualChunks (remove react-router-dom from 'react-vendor') and remove dependency from package.json, then run npm install.
+
+Deliverables:
+- Provide the exact changed/new files.
+- Ensure npm run build succeeds.
+
+Acceptance criteria:
+- There is no separate Projects page and the Hero button no longer navigates to /projects.
+- Projects appear as a tree under Hero on the homepage.
+- Scrolling opens branches from the center trunk and reveals project cards.
+- Year nodes are visible on the trunk and correspond to each project’s year (2026, 2025, 2024).
+- The displayed content matches exactly the provided projects and text.

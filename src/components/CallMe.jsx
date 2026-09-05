@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { useGLTF, useAnimations } from '@react-three/drei';
@@ -7,13 +7,21 @@ import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import '../styles/journey.css';
 import * as THREE from 'three';
+import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import useInView from '../hooks/useInView';
+import CanvasErrorBoundary from './CanvasErrorBoundary';
 
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
-const Base = ({ model }) => {
-  const { scene, animations } = model;
-  const { actions } = useAnimations(animations, scene);
-  const action = actions[Object.keys(actions)[0]];
+// One of the three clips merged into public/character.glb.
+const CALL_CLIP = 'Call_Me_Clean';
+
+const Base = ({ character }) => {
+  // Model.jsx loads the same cached GLTF into a different canvas, so this
+  // canvas needs its own skinned clone of the scene graph.
+  const scene = useMemo(() => cloneSkinned(character.scene), [character.scene]);
+  const { actions } = useAnimations(character.animations, scene);
+  const action = actions[CALL_CLIP];
 
   const baseRef = useRef();
   useEffect(() => {
@@ -71,26 +79,43 @@ const Base = ({ model }) => {
   );
 };
 
-const CallMe = () => {
-  const baseModel = useGLTF('/call_me-compressed.glb', true);
+// Inner scene: useGLTF only fires the character GLB download once mounted
+// (and it is the same cached file Model.jsx uses, so it downloads once).
+const CallMeScene = () => {
+  const character = useGLTF('/character.glb', true);
 
   return (
-    <div className="nouri">
+    <CanvasErrorBoundary>
       <Canvas
         shadows
-        gl={{ preserveDrawingBuffer: true }}
+        dpr={[1, 2]}
+        gl={{
+          preserveDrawingBuffer: true,
+          // Allow a software (SwiftShader) fallback when no GPU is available.
+          failIfMajorPerformanceCaveat: false,
+          powerPreference: 'high-performance',
+        }}
         camera={{ position: [0, 1, 5] }}
       >
         <directionalLight
           position={[0, 7, 6]}
-          intensity={2.3} 
+          intensity={2.3}
           castShadow
         />
         <ambientLight intensity={1} />
         <Suspense fallback={null}>
-          <Base model={baseModel} />
+          <Base character={character} />
         </Suspense>
       </Canvas>
+    </CanvasErrorBoundary>
+  );
+};
+
+const CallMe = () => {
+  const [ref, inView] = useInView();
+  return (
+    <div className="nouri" ref={ref}>
+      {inView && <CallMeScene />}
     </div>
   );
 };

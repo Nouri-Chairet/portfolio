@@ -4,7 +4,7 @@ import "../styles/hero.css";
 import "../styles/heroBubble.css";
 import Model from "../components/Model";
 import { TextPlugin } from "gsap/TextPlugin";
-import Stars from "../components/Stars";
+import StarField from "../components/StarField";
 import star from "/star.svg";
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useNavigate } from "react-router-dom";
@@ -171,9 +171,7 @@ export default function Hero() {
 
             <div className={finish ? "inv" : "hero-right"}>
             <button onClick={()=>{navigate('/projects')}} className="hero-btn" >View Projects</button>
-                <div style={{ height: "00vh", width: "70vh"}}>
-                    <Stars number={1000} />
-                </div>
+                <StarField />
                 <div ref={imgRef} className="hero-img" >
                     <img src={star} alt="star" />
                 </div>
