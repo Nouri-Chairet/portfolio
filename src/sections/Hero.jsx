@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import "../styles/hero.css";
 import "../styles/heroBubble.css";
-import Model from "../components/Model";
+import HeroView from "../scene/HeroView";
 import { TextPlugin } from "gsap/TextPlugin";
 import StarField from "../components/StarField";
 import star from "/star.svg";
@@ -176,10 +176,7 @@ export default function Hero() {
                     <img src={star} alt="star" />
                 </div>
 
-                    <Model
-                       
-                        finish={active}
-                    />
+                    <HeroView finish={active} />
 
 
                 <div className="hero-intro">

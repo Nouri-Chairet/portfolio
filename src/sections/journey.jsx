@@ -1,6 +1,6 @@
 import React from 'react'
 import '../styles/journey.css'
-import CallMe from '../components/CallMe'
+import CallMeView from '../scene/CallMeView'
 import ContactMe from '../components/ContactMe'
 
 const Journey = () => {
@@ -11,7 +11,7 @@ const Journey = () => {
         <ContactMe />
       </div>
       <div className='journey-right'>
-      <CallMe />
+      <CallMeView />
       </div>
     </div>
   )

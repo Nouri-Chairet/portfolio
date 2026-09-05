@@ -1,0 +1,30 @@
+/* The one WebGL canvas for the whole site.
+
+   It is fixed and spans the viewport, sitting *between* the section
+   backgrounds and the DOM UI:
+
+     z-index 0 (auto) .hero / .journey-container backgrounds, .starfield, .hero-img
+     z-index 1        .scene-root  <-- this canvas
+     z-index 2+       .hero-btn, .hero-intro, and any other DOM UI
+
+   That ordering reproduces the pre-refactor paint order, when each <Canvas>
+   was an unpositioned child of .model / .nouri and so painted above the
+   starfield and star but below the button and speech bubble.
+
+   The canvas takes no pointer events. drei's <View> attaches the event layer
+   to the tracked elements (.model, .nouri) instead, so only those regions are
+   interactive — see SceneRoot.jsx.
+
+   NOTE: react-three-fiber sets `position: relative; width: 100%; height: 100%`
+   as *inline* styles on this element, so these values cannot be enforced from
+   here — they are passed through the Canvas `style` prop in SceneRoot.jsx and
+   restated below only so the layer is greppable from CSS. */
+.scene-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Nothing is painted outside a <View>'s scissor rect, so the canvas is
+   transparent everywhere else and the section backgrounds show through. */

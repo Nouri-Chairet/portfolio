@@ -29,14 +29,21 @@ src/
     Hero.jsx          typed-text intro, star ScrollTrigger, mounts <Model />
     journey.jsx       ContactMe (center) + CallMe (right)
     Projects.jsx      lazy route; Lottie background + SpaceCard grid
+  scene/              ALL 3D lives here
+    SceneRoot.jsx     the site's one <Canvas>; mounted by App, never unmounted
+    HeroView.jsx      <View> tracking .model - camera, lights, Astronaut, Ufo
+                      + the single ScrollTrigger against .hero
+    CallMeView.jsx    <View> tracking .nouri - camera, lights, CallMePose
+    Astronaut.jsx     hero character (idle + dance clips)
+    Ufo.jsx           the UFO the astronaut rides in on
+    CallMePose.jsx    journey-panel character (call-me clip)
   components/
-    Model.jsx         WebGL canvas #1 - avatar + dance model + UFO base
-    CallMe.jsx        WebGL canvas #2 - "call me" model  (see Rule 1)
     StarField.jsx     pure-CSS parallax starfield (no WebGL) - replaced the old Three.js Stars
     CanvasErrorBoundary.jsx  degrades a failed WebGL context instead of white-screening
     Loader.jsx        styled-components Suspense fallback
     ui/HandWriting.jsx, ui/SpaceCard.jsx
-  hooks/useInView.js  latching IntersectionObserver; gates Canvas mounts until scrolled into view
+  hooks/useInView.js  latching IntersectionObserver; gates 3D content until scrolled into view
+  hooks/useScrollProgress.js  the single scroll-progress source of truth
   styles/*.css
 ```
 
@@ -75,11 +82,37 @@ extra context also costs its own render loop, its own GPU memory, and its own
 `three` scene graph. Reuse the existing canvas and add a scene/group to it
 instead of mounting a new one.
 
-> **Current state: violated.** `Model.jsx` and `CallMe.jsx` each own a
-> `<Canvas>`. Both are gated behind `useInView` (so they mount lazily) and
-> wrapped in `CanvasErrorBoundary`, which contains the damage - but it is still
-> two contexts. Consolidating them into a single site-level canvas is the
-> intended direction. Until that lands: **do not add a third.**
+**How to add 3D.** The one canvas is `scene/SceneRoot.jsx`, mounted by `App`
+and never torn down. A section contributes 3D by rendering a drei `<View>` that
+tracks a DOM box; drei scissors the shared canvas to that box, so each region
+keeps its own camera and lights and is clipped exactly to its element:
+
+```jsx
+<View className="model" ref={viewRef} index={1}>
+  <PerspectiveCamera makeDefault position={[4, 6, 23]} fov={50} />
+  <ambientLight intensity={1} />
+  <Astronaut ref={setAstronaut} scale={scale} hitArea={viewRef} />
+</View>
+```
+
+The canvas is `position: fixed`, full-viewport, `z-index: 1`,
+`pointer-events: none`. Those values are set through the Canvas `style` prop,
+not the stylesheet - R3F writes `position: relative; width: 100%; height: 100%`
+inline on its wrapper and inline styles win. See `styles/scene.css` for why
+z-index 1 is the correct layer.
+
+Events reach 3D objects through the *tracked elements*, not the canvas. drei's
+`<View>` re-points R3F's event layer at whichever tracked element mounted last,
+which would silently break the other view, so `SceneRoot` re-points it at the
+shared app root (`ViewEventBridge`) - each view's own `compute` still filters by
+`event.target`. Interactive objects additionally take a `hitArea` ref and
+ignore events whose target is not that element, so a click on unrelated DOM
+cannot re-fire a stale raycast. **Any new clickable 3D object needs that
+guard.**
+
+> **Current state: satisfied.** One `<Canvas>`, one WebGL context (verified in
+> a headless browser). `CanvasErrorBoundary` still wraps it so a machine
+> without WebGL degrades instead of white-screening.
 
 ### 2. No `setTimeout`-based animation choreography
 
@@ -145,6 +178,30 @@ the same token can mean different things on different routes.
 
 Per-component CSS may *consume* tokens (`var(--color-primary)`) freely; it may
 not *define* them.
+
+### 6. One scroll-progress source of truth
+
+`hooks/useScrollProgress.js` owns hero scroll progress. Exactly one
+ScrollTrigger exists against `.hero`; it lives in `scene/HeroView.jsx`, drives
+one timeline holding both the astronaut's and the UFO's exit tweens, and
+publishes progress via `setHeroProgress`. Read it with
+`useScrollProgressRef()` inside `useFrame` (no re-render) or
+`useScrollProgress()` when DOM UI genuinely needs to re-render.
+
+Do not register another ScrollTrigger against `.hero` for scene content. Before
+this existed, `Astronaut` and `Ufo` each registered their own and `CallMe`
+killed all of them on unmount.
+
+### 7. DPR is capped and adaptive
+
+The canvas runs `<PerformanceMonitor>` (steps DPR between 1 and 2 on sustained
+FPS changes) plus `<AdaptiveDpr pixelated />` (drops resolution during momentary
+stalls). Never set a fixed `dpr` above 2 - the UFO and character are already the
+heaviest thing on the page.
+
+`preserveDrawingBuffer` is **off**. Nothing reads the canvas back; turning it on
+forces a full-buffer copy every frame. Only re-enable it alongside an actual
+`toDataURL`/screenshot feature.
 
 ## Visual identity
 
