@@ -1,0 +1,95 @@
+/* The site's design tokens. Imported once, from App.jsx.
+ *
+ * This block used to sit in hero.css. It had to move: SiteNav is eager (it is
+ * the first paint) while hero.css arrives with the lazy Hero chunk, so the
+ * navbar would have rendered its first frames with every `var()` unresolved —
+ * transparent text on a transparent panel.
+ *
+ * That is the failure mode the "one global file" rule exists to prevent, and
+ * it is why a per-component stylesheet may *consume* tokens freely but must
+ * never *define* them: duplicated `:root` rules resolve by load order, and
+ * load order changes the moment something is code-split. */
+
+:root {
+  --color-primary: #F3F3E0;
+  --color-secondary: #133E87;
+  --color-accent: #608BC1;
+  --color-text: #CBDCEB;
+
+  /* Space base, and the two highlight colours. Named here so new surfaces stop
+     re-typing the hex. */
+  --color-space: #051443;
+  --color-violet: #9b40fc;
+  --color-magenta: #c340da;
+
+  /* ------------------------------------------------------------ type ----
+     The site's one typeface, declared here and nowhere else, for exactly the
+     reason the colours are: a font-family hardcoded inside a component is a
+     second source of truth that drifts. Every stylesheet consumes
+     `var(--font-sans)`; none of them names Montserrat.
+
+     Self-hosted through @fontsource/montserrat (imported by App.jsx, latin
+     subset, weights 400/600/800, `font-display: swap` already set by the
+     package) rather than fetched from Google Fonts. Self-hosting costs a
+     little bundle size and buys: no third-party connection on the critical
+     path, no extra DNS+TLS round trip before any text can swap in, and
+     nothing that breaks when a CDN is blocked — the same reasoning that keeps
+     drei's <Text> out of scene/skillAtlas.js (rule 19).
+
+     The system stack behind it is what renders during `swap`, so it is a real
+     fallback and not decoration.
+
+     NOT the handwritten name: that is baked SVG outlines, not text in a font
+     (rule 8), so no font-family reaches it and the intro morph is unaffected. */
+  --font-sans: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+
+  /* The small uppercase letterspaced labels — eyebrows, the loading readout,
+     project meta. A distinct ROLE rather than a competing body font, tokenised
+     here so that role is still named in one place. */
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono',
+    monospace;
+
+  /* ----------------------------------------------------------- glass ----
+     The frosted-glass surface every card on the site is built from: the hero
+     skills panel, the project copy, the skills reference and the contact
+     buttons. Consumed through the `.glass` class in App.css, which also owns
+     the no-backdrop-filter fallback, so the recipe exists in one place.
+
+     The white fill is a sheen, not a ground — at 6% it barely lightens what is
+     behind it. Legibility comes from the blur, which turns a star behind a
+     word into a faint smear rather than a point of light the size of a
+     letter. See `--glass-scrim` for the one case where the blur is not
+     enough.
+
+     `--glass-fallback` is what a browser WITHOUT backdrop-filter paints
+     instead. Without it the text would sit on bare sky at 6% white, which is
+     no ground at all. Solid, and from the space-navy family. */
+  --glass-fill: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-filter: blur(12px) saturate(180%);
+  --glass-fallback: rgb(12, 24, 70);
+
+  /* Under the white sheen, on cards that hold running text over the 3D
+     scene. A white fill cannot fix contrast for white text — raising its
+     alpha brightens the ground the text has to stand out from — so where the
+     measured contrast needed help this is the layer that was raised, not the
+     sheen. Low enough that the planet behind still reads through as colour. */
+  --glass-scrim: rgba(5, 12, 40, 0.42);
+  /* The same layer, raised, for cards dense enough that they cannot avoid
+     sitting over a lit planet: the skills reference (eight groups), and the
+     project copy in portrait. At 0.42 the skills items measured 3.4:1 on a
+     phone and the longer CV bullets 3.9:1. */
+  --glass-scrim-strong: rgba(5, 12, 40, 0.66);
+
+  /* Height of the landed navbar. The morph reads the real measured height off
+     the DOM rather than this value, but sections use it for scroll-margin so a
+     hash jump does not land under the bar. */
+  --nav-h: 4.25rem;
+}
+
+@media (max-width: 580px) {
+  :root {
+    --nav-h: 3.5rem;
+  }
+}

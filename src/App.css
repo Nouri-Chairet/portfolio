@@ -1,12 +1,157 @@
-*{
-    margin: 0;
-    padding: 0;
-    scroll-behavior: smooth;
-    overflow-x: hidden;
+/* Global reset.
 
+   `* { overflow-x: hidden }` used to live here. It did not fix anything — it
+   hid horizontal overflow wherever it happened, and as a side effect gave
+   every element on the page `overflow-y: auto` (per spec, when one axis is not
+   `visible` the other computes to `auto`), which is what put a stray scrollbar
+   through the project titles. It is gone; the causes are fixed instead:
 
+     .panel / .project-panel used `width: 100vw`, which is wider than the
+     viewport whenever a classic scrollbar is present — 100vw includes it.
+     They use `width: 100%` now.
+
+     .hero had `width: 100wh`, not a real unit, so it silently fell back to
+     auto.
+
+   `box-sizing: border-box` is set globally because several panels combine a
+   percentage width with padding; under the default content-box the padding is
+   added on top and the element overflows its parent on narrow screens. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
-.panel{
-    height: 100vh;
-    width: 100vw;
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* The scrollbar gutter is held open permanently so that taking the body out
+     of flow for the intro's scroll lock (hooks/useScrollLock.js) does not
+     reflow the page by the scrollbar's width — which would also resize the
+     fixed WebGL canvas underneath it, for one frame, mid-morph. */
+  overflow-y: scroll;
+}
+
+body {
+  /* Montserrat, set once and inherited by everything. Declared through the
+     token (styles/tokens.css) rather than named here, so there is exactly one
+     place the site's typeface is chosen. */
+  font-family: var(--font-sans);
+  /* The site is dark; this stops a white flash behind fixed layers on
+     over-scroll and gives the canvas something to sit on. */
+  background: #051443;
+  /* Double-tapping the character is a real gesture here (scene/Astronaut.jsx).
+     Without this, the browser reserves a double-tap for zoom and either delays
+     the second click by ~300ms or swallows it, which is enough to break the
+     gesture on touch. `manipulation` keeps panning and pinch-zoom — the one
+     thing it gives up is double-tap-to-zoom, which pinch already covers. */
+  touch-action: manipulation;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+.panel {
+  height: 100vh;
+  width: 100%;
+}
+
+/* Read by assistive tech, not painted. For text that sighted visitors get
+   from context, like a link opening in a new tab. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- glass --------------------------------------------------------------- */
+/* The one frosted-glass recipe. Tokens in styles/tokens.css.
+
+   Square corners, always — the site's cards are flat and square (rule 19's
+   skills panel set that direction and everything else follows it).
+
+   A card that holds running text over the 3D scene adds `glass--scrim`, which
+   lays a translucent navy under the sheen. Both layers are one `background`,
+   so the fallback below replaces them together. */
+.glass {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  border-radius: 0;
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
+}
+
+.glass--scrim {
+  background:
+    linear-gradient(var(--glass-fill), var(--glass-fill)),
+    var(--glass-scrim);
+}
+
+/* No backdrop-filter, no glass: the fill alone is 6% white over whatever is
+   behind it, which is no ground for text at all. Paint a solid one instead.
+
+   `!important` because this must beat every per-component variant of the
+   glass background (the portrait project card raises its scrim with a more
+   specific selector), and in this one situation "solid" is the only correct
+   answer whatever the component asked for. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass--scrim {
+    background: var(--glass-fallback) !important;
+  }
+}
+
+/* --- touch targets ------------------------------------------------------ */
+/* On a coarse pointer every control gets at least a 44x44 CSS-pixel target.
+   Several were between 35 and 41px: the close buttons, the skip control, the
+   scroll cue and the gallery's own buttons. The 3D planets are far larger than
+   this already — a planet occupies about a third of the viewport height. */
+@media (pointer: coarse) {
+  button,
+  a.detail-action,
+  a.project-link,
+  .hero-cue,
+  .hero-skip,
+  .detail-close,
+  .detail-action,
+  .project-link,
+  .gallery-hide,
+  .lightbox-close,
+  .lightbox-nav,
+  .shot {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Keep them centred once the minimum kicks in. */
+  .detail-close,
+  .lightbox-close,
+  .lightbox-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .detail-action,
+  .project-link,
+  .gallery-hide,
+  .hero-skip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }

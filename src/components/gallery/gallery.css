@@ -1,0 +1,179 @@
+/* Gallery styles live beside the component so they land in the SAME lazy
+   chunk's CSS file, not in the main stylesheet. */
+
+.gallery {
+  margin-top: 1.6rem;
+  border-top: 1px solid rgba(243, 243, 224, 0.18);
+  padding-top: 1.4rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+}
+
+.gallery-empty {
+  margin-top: 1.2rem;
+  opacity: 0.7;
+}
+
+.shot {
+  display: block;
+  padding: 0;
+  border: 1px solid rgba(155, 64, 252, 0.4);
+  border-radius: 10px;
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.shot:hover,
+.shot:focus-visible {
+  border-color: var(--color-primary, #f3f3e0);
+  transform: translateY(-2px);
+}
+
+/* The frame reserves the image's exact box via aspect-ratio, so nothing
+   reflows when the bytes land. The shimmer sits on the frame and is switched
+   off once the image reports it has decoded. */
+.shot-frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  background: linear-gradient(
+    100deg,
+    rgba(155, 64, 252, 0.10) 20%,
+    rgba(195, 64, 218, 0.22) 40%,
+    rgba(155, 64, 252, 0.10) 60%
+  );
+  background-size: 220% 100%;
+  animation: shot-shimmer 1.5s linear infinite;
+}
+
+.shot-frame.is-loaded {
+  animation: none;
+  background: none;
+}
+
+.shot-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.shot-frame.is-loaded img {
+  opacity: 1;
+}
+
+@keyframes shot-shimmer {
+  from { background-position: 140% 0; }
+  to   { background-position: -40% 0; }
+}
+
+.gallery-hide {
+  margin-top: 1.2rem;
+  padding: 0.5rem 1.1rem;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--color-primary, #f3f3e0);
+  background: none;
+  border: 1px dashed rgba(243, 243, 224, 0.5);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.gallery-hide:hover,
+.gallery-hide:focus-visible {
+  border-style: solid;
+}
+
+/* --- lightbox ----------------------------------------------------------- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: rgba(2, 8, 26, 0.94);
+  backdrop-filter: blur(6px);
+  touch-action: pan-y;
+}
+
+.lightbox-figure {
+  margin: 0;
+  max-width: 92vw;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.lightbox-figure img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 92vw;
+  max-height: 76vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.lightbox-figure figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: var(--color-text, #cbdceb);
+}
+
+.lightbox-count {
+  font-family: var(--font-mono);
+  opacity: 0.75;
+}
+
+.lightbox-close,
+.lightbox-nav {
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--color-primary, #f3f3e0);
+  background: rgba(5, 20, 67, 0.7);
+  border: 1px solid rgba(243, 243, 224, 0.4);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: clamp(0.75rem, 3vw, 1.5rem);
+  right: clamp(0.75rem, 3vw, 1.5rem);
+}
+
+.lightbox-close:hover,
+.lightbox-nav:hover,
+.lightbox-close:focus-visible,
+.lightbox-nav:focus-visible {
+  border-color: var(--color-primary, #f3f3e0);
+  background: rgba(155, 64, 252, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shot,
+  .shot-frame img {
+    transition: none;
+  }
+  .shot-frame {
+    animation: none;
+    background: rgba(155, 64, 252, 0.14);
+  }
+}

@@ -1,34 +1,71 @@
-import React from 'react'
-import '../styles/contact.css'
-import githubIcon from '../assets/github_logo.svg'
-import linkedinIcon from '../assets/linkedin.webp'
-const ContactMe = () => {
-  return (
-    <div className='contact-container'>
+import '../styles/contact.css';
+import {
+  EMAIL,
+  GITHUB_URL,
+  LINKEDIN_URL,
+  LOCATION,
+  RESUME_FILENAME,
+  RESUME_HREF,
+} from '../data/contact';
 
-  <h2 className='contact-title'>Contact Me</h2>
-  <div className='contact-content'>
+/**
+ * The contact section: a UFO hovering overhead, a cone of warm light falling
+ * from it, and everything a visitor needs standing inside the light.
+ *
+ * All of the content is DOM — a heading and four real links — and none of it
+ * depends on the canvas. The UFO and the beam are decoration drawn in the
+ * shared root scene (scene/ContactBeam.jsx), where the bloom reaches them.
+ * They are placed by reading the two empty boxes below every frame, so the
+ * composition is laid out here, in CSS, and the 3D follows it at any width.
+ *
+ * With no WebGL, `.contact-beam` paints a CSS stand-in for the light (see
+ * contact.css) and the links work exactly the same.
+ */
+const ContactMe = () => (
+  <section className="contact" aria-labelledby="contact-title">
+    {/* Where the UFO hovers: its centre and width. Read by ContactBeam. */}
+    <div className="contact-ufo" data-contact-ufo aria-hidden="true" />
+    {/* The cone of light: apex at the top edge, base along the bottom edge,
+        base as wide as the box. Read by ContactBeam; painted by CSS only when
+        there is no canvas. */}
+    <div className="contact-beam" data-contact-beam aria-hidden="true" />
 
-  <p className='contact-text'>You can reach me at my email: <br/> nouric576@gmail.com</p>
-  <div className='contact-links'>
-    <a href='https://www.linkedin.com/in/nouri-ch-554021266/' target='_blank' rel='noopener noreferrer'>
-      <img src={linkedinIcon} alt='LinkedIn' className='linkedin' height={110} loading='lazy' />
-    </a>
-    
+    <div className="contact-stack">
+      <h2 id="contact-title" className="contact-title">
+        Contact me
+      </h2>
 
-    <a href='https://github.com/Nouri-Chairet' target='_blank' rel='noopener noreferrer'>
-      <img src={githubIcon} alt='GitHub' className="github" height={70} />
-    </a>
-    <a href='/Resume_Nouri.pdf' download='Resume_Nouri.pdf'>
-    
-    <button className='contact-button' ><p className='contact-button-text'>My Resume</p></button>
-    
-    </a>
+      <a className="contact-button contact-button--cv glass glass--scrim" href={RESUME_HREF} download={RESUME_FILENAME}>
+        Download CV
+      </a>
 
-  </div>
-  </div>
-    </div> 
-  )
-}
+      <div className="contact-socials">
+        <a
+          className="contact-button glass glass--scrim"
+          href={LINKEDIN_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          LinkedIn
+          <span className="visually-hidden"> (opens in a new tab)</span>
+        </a>
+        <a
+          className="contact-button glass glass--scrim"
+          href={GITHUB_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+          <span className="visually-hidden"> (opens in a new tab)</span>
+        </a>
+      </div>
 
-export default ContactMe
+      <a className="contact-email" href={`mailto:${EMAIL}`}>
+        {EMAIL}
+      </a>
+      <p className="contact-location">{LOCATION}</p>
+    </div>
+  </section>
+);
+
+export default ContactMe;

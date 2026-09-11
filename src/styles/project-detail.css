@@ -1,0 +1,205 @@
+/* The project detail panel: a modal over the pinned projects section.
+
+   The backdrop dims the page but leaves the left portion clearer, because the
+   planet eases over there while the panel is open — the two are meant to be
+   read together. */
+
+.detail-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: linear-gradient(
+    90deg,
+    rgba(3, 10, 35, 0.35) 0%,
+    rgba(3, 10, 35, 0.72) 45%,
+    rgba(3, 10, 35, 0.9) 100%
+  );
+  animation: detail-fade 0.32s ease both;
+}
+
+.detail-panel {
+  position: relative;
+  width: min(100%, 34rem);
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: clamp(1.4rem, 3vw, 2.4rem);
+  color: var(--color-text, #cbdceb);
+  background: rgba(5, 16, 48, 0.95);
+  border: 1px solid rgba(155, 64, 252, 0.45);
+  border-radius: 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+  animation: detail-rise 0.36s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+@keyframes detail-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes detail-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.detail-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-primary, #f3f3e0);
+  background: none;
+  border: 1px solid rgba(243, 243, 224, 0.35);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.detail-close:hover {
+  border-color: var(--color-primary, #f3f3e0);
+  background: rgba(155, 64, 252, 0.25);
+}
+
+/* The same weight-and-size hierarchy as the voyage card, and the same rule:
+   no colour-coding on project text. */
+.detail-year {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.detail-title {
+  margin: 0.3rem 0 0.5rem;
+  font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+  line-height: 1.1;
+  color: var(--color-primary, #f3f3e0);
+}
+
+.detail-tagline {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 1.1rem;
+}
+
+.detail-highlights {
+  margin: 0 0 1.4rem;
+  padding-left: 1.1em;
+  list-style: disc;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* hero.css's global `li` would make these inline and drop the markers. */
+.detail-highlights li {
+  display: list-item;
+  padding: 0;
+  color: inherit;
+}
+
+.detail-highlights li + li {
+  margin-top: 0.45rem;
+}
+
+.detail-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.6rem;
+}
+
+.detail-tech li {
+  padding: 0.28rem 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-primary, #f3f3e0);
+  border: 1px solid rgba(155, 64, 252, 0.55);
+  border-radius: 999px;
+  background: rgba(155, 64, 252, 0.09);
+}
+
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.detail-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.2rem;
+  font: inherit;
+  font-weight: bold;
+  color: var(--color-primary, #f3f3e0);
+  background: none;
+  border: 2px dashed var(--color-primary, #f3f3e0);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.detail-action--primary {
+  border-style: solid;
+  background: rgba(155, 64, 252, 0.2);
+}
+
+.detail-action:hover,
+.detail-action:focus-visible {
+  border-style: solid;
+  background: rgba(155, 64, 252, 0.3);
+}
+
+.detail-action-count {
+  padding: 0 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  border-radius: 999px;
+  background: rgba(243, 243, 224, 0.18);
+}
+
+/* No live URL: state the fact instead of rendering a dead anchor. */
+.detail-nolink {
+  font-size: 0.92rem;
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.detail-gallery-loading {
+  margin-top: 1.4rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* A visible focus ring everywhere in the panel, including for the gallery. */
+.detail-panel :focus-visible,
+.lightbox :focus-visible {
+  outline: 3px solid #3ef3ff;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .detail-backdrop {
+    align-items: flex-end;
+    justify-content: center;
+    background: rgba(3, 10, 35, 0.82);
+  }
+  .detail-panel {
+    width: 100%;
+    max-height: 72vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-backdrop,
+  .detail-panel {
+    animation-duration: 0.01ms;
+  }
+}

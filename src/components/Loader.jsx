@@ -21,7 +21,7 @@ const StyledWrapper = styled.div`
     transform: translate(-50%,-50%);
     
     font-size: 50px;
-    font-family: monospace;
+    font-family: var(--font-mono);
     font-weight: bold;
     text-transform: uppercase;
     color: #0000;

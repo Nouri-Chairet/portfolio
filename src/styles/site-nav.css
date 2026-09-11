@@ -1,0 +1,345 @@
+/* The header, in its three states.
+ *
+ * One element. `--intro` is the full-viewport panel the handwriting is written
+ * on; `--bar` is the landed navbar; `--morphing` is `--bar` with the intro
+ * stack still painted so it can fade out and be clipped by the collapsing
+ * header. See components/SiteNav.jsx for the morph itself. */
+
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Above the WebGL canvas (1) and every section, below the detail modal. */
+  z-index: 40;
+  /* What makes the collapse read as a collapse: everything still in flow is
+     cut off by the shrinking edge. The logo is `position: fixed` during the
+     morph and the header carries no transform, so the logo is not clipped —
+     it is the one thing that survives the collapse, which is the point. */
+  overflow: hidden;
+  color: var(--color-secondary);
+}
+
+/* Both skins are painted; the morph crossfades their opacity. Doing it this
+   way rather than tweening `background` means the blur can fade in too, and
+   avoids animating a property that would otherwise snap on a class change. */
+.site-nav-skin {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.site-nav-skin--intro {
+  background: var(--color-primary);
+}
+
+.site-nav-skin--bar {
+  background: rgba(5, 20, 67, 0.55);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border-bottom: 1px solid rgba(243, 243, 224, 0.14);
+}
+
+/* Which skin is showing is a property of the STATE, stated here — not
+   something the morph timeline leaves behind.
+   
+   It used to be the latter, and the entrance has three other ways to reach the
+   landed navbar: Skip, Escape and the six-second failsafe all jump straight to
+   hero_ready without the morph ever running. On every one of those paths the
+   cream intro skin stayed at full opacity underneath a navbar whose logo and
+   links are also cream — an invisible logo on a cream bar. The morph now
+   animates between two states that are already correct without it. */
+.site-nav--intro .site-nav-skin--intro { opacity: 1; }
+.site-nav--intro .site-nav-skin--bar   { opacity: 0; }
+.site-nav--bar   .site-nav-skin--intro { opacity: 0; }
+.site-nav--bar   .site-nav-skin--bar   { opacity: 1; }
+
+.site-nav-inner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  max-width: 82rem;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* --- the logo, which is the hero's handwriting ------------------------- */
+
+.site-nav-logo {
+  display: block;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  line-height: 0;
+}
+
+.site-nav-logo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Visible while the pen sprite rides the ends of a stroke and can stray
+     outside the box. */
+  overflow: visible;
+}
+
+/* --- intro state -------------------------------------------------------- */
+
+.site-nav--intro {
+  height: 100vh;
+  height: 100dvh;
+}
+
+.site-nav--intro .site-nav-inner {
+  padding: 0;
+  max-width: none;
+  display: block;
+}
+
+.site-nav--intro .site-nav-links {
+  display: none;
+}
+
+/* Placed against the header rather than flowed, so lifting the logo out for
+   its flight does not shift anything left behind. */
+.site-nav--intro .site-nav-logo {
+  position: absolute;
+  left: 50%;
+  top: 41%;
+  transform: translate(-50%, -50%);
+  width: min(78vw, 46rem);
+  cursor: default;
+}
+
+.site-nav-intro-stack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Fixed to the viewport, NOT to the header: a percentage of a box that is
+     being animated to 68px would rocket upward as the header collapsed. */
+  height: 100vh;
+  height: 100dvh;
+  pointer-events: none;
+}
+
+.site-nav-welcome {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+  width: min(84vw, 40rem);
+  color: #020000;
+  line-height: 0;
+}
+
+.site-nav-welcome svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* --- landed navbar ------------------------------------------------------ */
+
+.site-nav--bar {
+  height: var(--nav-h);
+  color: var(--color-primary);
+}
+
+.site-nav--bar .site-nav-logo svg {
+  /* From the first frame of the collapse the viewBox is a window closing in on
+     one word, so everything outside it has to go. `--bar` is already on the
+     header when the morph starts, which is what makes this a class rule rather
+     than something the timeline has to remember to set. */
+  overflow: hidden;
+}
+
+.site-nav--bar .site-nav-logo {
+  height: 2.2rem;
+  /* Width follows the viewBox aspect, which after the morph is the box around
+     "Nouri". The morph measures this box to know where to land. */
+  width: auto;
+  color: var(--color-primary);
+}
+
+.site-nav--bar .site-nav-logo:hover,
+.site-nav--bar .site-nav-logo:focus-visible {
+  color: #fff;
+}
+
+.site-nav-links ul {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.4rem, 2vw, 1.4rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* hero.css sets a global `li { display: inline; color: var(--color-secondary) }`
+   — deep blue on navy, invisible. Restated here rather than relying on
+   specificity accidents. */
+.site-nav-links li {
+  display: block;
+  padding: 0;
+  margin: 0;
+}
+
+.site-nav-links a {
+  display: inline-block;
+  padding: 0.45rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: color 0.25s ease, background-color 0.25s ease;
+}
+
+.site-nav-links a:hover {
+  color: var(--color-primary);
+  background: rgba(155, 64, 252, 0.18);
+}
+
+.site-nav-resume {
+  border: 1px solid rgba(243, 243, 224, 0.45);
+  border-style: dashed;
+}
+
+.site-nav-resume:hover {
+  border-style: solid;
+}
+
+/* A visible ring on every interactive thing in the bar. Keyboard users get the
+   same map of the header that pointer users get from hover. */
+.site-nav a:focus-visible,
+.site-nav button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* --- narrow viewports ---------------------------------------------------- */
+
+@media (max-width: 580px) {
+  .site-nav--intro .site-nav-logo {
+    width: min(88vw, 24rem);
+    top: 38%;
+  }
+
+  .site-nav-welcome {
+    width: min(92vw, 22rem);
+    top: 57%;
+  }
+
+  .site-nav--bar .site-nav-logo {
+    height: 1.7rem;
+  }
+
+  .site-nav-links a {
+    padding: 0.4rem 0.45rem;
+    font-size: 0.82rem;
+  }
+
+  .site-nav-links ul {
+    gap: 0.15rem;
+  }
+}
+
+@media (min-width: 581px) and (max-width: 1024px) {
+  .site-nav--intro .site-nav-logo {
+    width: min(84vw, 34rem);
+  }
+
+  .site-nav-welcome {
+    width: min(88vw, 30rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a,
+  .site-nav--bar .site-nav-logo {
+    transition: none;
+  }
+}
+
+/* --- loading gate ------------------------------------------------------- */
+/* Covers everything while the character and UFO decode. Below the skip
+   control, which has to be reachable from the first paint. */
+.site-nav-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-nav-loading-progress {
+  position: absolute;
+  top: calc(50% + 3.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--color-space);
+  letter-spacing: 0.08em;
+}
+
+/* --- skip control ------------------------------------------------------- */
+/* Lives here, not in hero.css: hero.css ships with the lazy Hero chunk, and
+   this control has to be styled on the first paint — an unstyled skip button
+   is not a skip button. Above the loading overlay (45) and the header (40),
+   because it must be reachable at every stage of the entrance. */
+.hero-skip {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: bold;
+  font-family: inherit;
+  color: var(--color-primary);
+  background: rgba(5, 20, 67, 0.72);
+  border: 2px dashed var(--color-primary);
+  border-radius: 6px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.hero-skip:hover,
+.hero-skip:focus-visible {
+  border-style: solid;
+  background: rgba(5, 20, 67, 0.9);
+}
+
+.hero-skip:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 580px) {
+  .hero-skip {
+    bottom: 1rem;
+    padding: 0.55rem 1.1rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-skip {
+    transition: none;
+  }
+}

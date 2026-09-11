@@ -1,211 +1,214 @@
+/* The hero section: the space stage behind the header.
+ *
+ * The cream left panel is gone. Its only content was the handwritten name and
+ * welcome line, and those are the entrance now — components/SiteNav.jsx writes
+ * them full-viewport and collapses the panel into the navbar, where the name
+ * goes on living as the logo. A cream third with nothing in it would have been
+ * a hole in the layout, so the hero is the full-bleed space scene it always
+ * was on the right-hand side.
+ *
+ * Design tokens are NOT declared here. They live in styles/tokens.css, which
+ * App.jsx imports once — the header is eager and this file is not, so a `:root`
+ * block here would have left the navbar unstyled for its first frames. */
 
-
-.hero-btn{
-    background: transparent;
-    color: var(--color-primary);
-    padding: 1rem 2rem;
-    border-radius: 5px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    border: 2px dashed var(--color-primary);
-    transition: all 0.9s ease-in-out;
-    position: absolute;
-    top:10vh;
-    right:5vw;
-    z-index: 2;
+.hero-btn {
+  background: transparent;
+  color: var(--color-primary);
+  padding: 1rem 2rem;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: 2px dashed var(--color-primary);
+  cursor: pointer;
+  transition: all 0.9s ease-in-out;
+  position: absolute;
+  top: 10vh;
+  right: 5vw;
+  z-index: 2;
 }
-.hero-btn:hover{
+
+.hero-btn:hover {
   border: 2px solid var(--color-primary);
 }
-li{
-    display: inline;
-    padding: 0 1rem;
-    text-decoration: none;
-    color: var(--color-secondary);
 
+li {
+  display: inline;
+  padding: 0 1rem;
+  text-decoration: none;
+  color: var(--color-secondary);
 }
-a{
-    text-decoration: none;
+
+a {
+  text-decoration: none;
 }
-:root {
-  --color-primary: #F3F3E0;
-  --color-secondary:#133E87;
-  --color-accent: #608BC1;
-  --color-text:#CBDCEB;
-}
+
 .hero {
-    background:#051443;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 100vh;
-    width: 100wh;
-    color: var(--color-secondary);
-    max-height: 100vh;
-    overflow: hidden;
-  }
-  
-  .hero-left {
-    background: var(--color-primary);
-
-    height: 100vh;
-    display: flex;
-    width: 30vw;
-    min-height: 100vh;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    max-width:30vw ;
-    gap: 1rem;
-    transition: all 2s ease-out;
-  }
-  .inv{
-    width: 0;
-    
-  }
-  .full-hero{
-    background: var(--color-primary);
-    gap: 1rem;
-    flex: 1;
-    height: 100vh;
-    background: var(--color-primary);
-    max-width: 100vw;
-    display: flex;
-    flex-direction: column;
-    padding-left: 5%;
-    align-items: center;
-    justify-content: center;
-  }
-  .hero-name {
-    font-size: 3rem;
-    font-weight: bold;
-  }
-  
-  .hero-welcome {
-    font-size: 1.5rem;
-    font-style: italic;
-    color: #020000;
-  }
-  
-  .hero-right {
-    height: 100%;
-    width:0;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    background-color: #051443;
-    animation: expandWidth 2s linear ;
-    transition: all 2s ease-out;
-    max-width: 70vw;
-  }
-  
-  .hero-intro {
-    position: absolute;
-    left: 33%;
-    top: 20%;
-    z-index: 3;
-    text-align: center;
-    transition: all 1s ease-out;
-    
-  }
-
-  .hero-img {
-    min-height: 10vh;
-    min-width: 10vh;
-    position: absolute;
-    top: 5%;
-    left: 36%;
-    object-fit: cover;
-    fill: var(--color-primary);
-    overflow: hidden;
-  }
-  .model{
-    margin-top: 10vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 70vw;
-    position: absolute;
-
-  }
-  @keyframes expandWidth {
-    from {
-      width: 0;
-    }
-    to {
-      width: 100vw;
-    }
-  }
-  .stars{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: -10;
+  position: relative;
+  background: var(--color-space);
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  max-height: 100vh;
+  color: var(--color-primary);
+  overflow: hidden;
 }
-.star{
-  position:sticky;
+
+/* The stage the absolutely-positioned furniture is placed against. */
+.hero-stage {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  width: 100%;
 }
+
+.hero-img {
+  min-height: 10vh;
+  min-width: 10vh;
+  position: absolute;
+  top: 5%;
+  left: 36%;
+  object-fit: cover;
+  fill: var(--color-primary);
+  overflow: hidden;
+}
+
+/* Reduced motion only: the welcome line, which otherwise lives on the intro
+   panel that reduced motion never plays. Bottom-left, clear of the scroll cue
+   (top 10vh, right 5vw), the dialogue anchor and the character. */
+.hero-welcome-static {
+  position: absolute;
+  left: 5%;
+  bottom: 8%;
+  z-index: 3;
+  width: min(42vw, 22rem);
+  color: var(--color-primary);
+  line-height: 0;
+  opacity: 0.9;
+}
+
+.hero-welcome-static svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: -10;
+}
+
+.star {
+  position: sticky;
+}
+
 @media (max-width: 580px) {
-  .hero-left {
-    display: none;
-  }
-  .hero-right {
-    width: 100vw;
-    max-width: 100vw;
-  }
-  .model{
-    width:100vw;
-  }
-
   .hero-img {
-    left: 0;
-    top: 0;
+    top: 12%;
+    left: 6%;
+    min-width: 7vh;
+    min-height: 7vh;
   }
-  .hero-name {
-    font-size: 2rem;
-  }
-  .hero-welcome {
-    font-size: 1rem;
-  }
-  .hero-intro {
+
+  /* The dialogue takes the lower half on phones, so the static welcome goes
+     above it rather than under it. */
+  .hero-welcome-static {
     left: 5%;
-    top: 70%;
-  }
-  .hero-img{
-    top: 10%;
-    left: 15%;
-    min-width: 8vh;
-    min-height: 8vh;
+    right: 5%;
+    bottom: auto;
+    top: 14%;
+    width: auto;
   }
 }
+
 @media (min-width: 581px) and (max-width: 1024px) {
-  .hero-name{
-    font-size: 2.2rem;
-  
-  }
-  .hero-welcome{
-    font-size: 1.2rem;
-  }
-  .hero-intro{
-    left: 33%;
-    top: 20%;
-  }
-  .hero-img{
+  .hero-img {
     min-width: 8vh;
     min-height: 8vh;
   }
 }
 
+/* --- scroll cue ---------------------------------------------------------- */
+/* Replaces the old "View Projects" navigate button now that projects are a
+   section on this page. Reads as a downward invitation rather than a link:
+   a dashed capsule with a drifting chevron beneath it. */
+.hero-cue {
+  position: absolute;
+  top: 10vh;
+  right: 5vw;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.9rem 1.6rem 0.7rem;
+  background: rgba(5, 20, 67, 0.35);
+  color: var(--color-primary);
+  font-size: 1.1rem;
+  font-weight: bold;
+  font-family: inherit;
+  border: 2px dashed var(--color-primary);
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(3px);
+  transition: border-color 0.4s ease, background-color 0.4s ease, transform 0.4s ease;
+}
 
+.hero-cue:hover,
+.hero-cue:focus-visible {
+  border-style: solid;
+  background: rgba(155, 64, 252, 0.22);
+  transform: translateY(2px);
+}
 
- 
+.hero-cue:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* Chevron: two borders on a rotated square, so there is no extra asset. */
+.hero-cue-arrow {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-right: 2px solid var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  transform: rotate(45deg);
+  animation: hero-cue-drift 1.9s ease-in-out infinite;
+}
+
+@keyframes hero-cue-drift {
+  0%, 100% { transform: rotate(45deg) translate(0, 0); opacity: 0.55; }
+  50%      { transform: rotate(45deg) translate(3px, 3px); opacity: 1; }
+}
+
+@media (max-width: 580px) {
+  .hero-cue {
+    top: auto;
+    bottom: 5vh;
+    right: 50%;
+    transform: translateX(50%);
+    padding: 0.7rem 1.2rem 0.55rem;
+    font-size: 0.95rem;
+  }
+  .hero-cue:hover,
+  .hero-cue:focus-visible {
+    transform: translateX(50%) translateY(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cue,
+  .hero-cue-arrow {
+    transition: none;
+    animation: none;
+  }
+  .hero-cue-arrow {
+    opacity: 0.85;
+  }
+}

@@ -1,0 +1,237 @@
+/* The character's dialogue: hint, keyboard control, speech bubble.
+ *
+ * Replaces heroBubble.css, whose bubble was a 1.68rem twelve-shadow slab built
+ * to hold paragraphs. This one is compact on purpose — the character is the
+ * subject of the hero and the text is a caption on it, not the other way
+ * round. */
+
+/* Anchored where the character stands. HeroScene places it at x +0.09 and
+   y -0.62 of the visible half-extent (fractions, not pixels, so the
+   composition survives a resize) — these percentages track that. */
+.hero-talk-anchor {
+  position: absolute;
+  left: 54%;
+  top: 62%;
+  z-index: 4;
+  width: 0;
+  height: 0;
+}
+
+/* --- the hint / keyboard control ---------------------------------------- */
+/* One element doing two jobs. It is always a focusable button, so a keyboard
+   or screen-reader visitor can always reach the conversation; it *shows* the
+   hint label only while the hint is up. The affordance outlives its label. */
+.hero-talk {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  display: block;
+  white-space: nowrap;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease, background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.hero-talk.is-hinting {
+  opacity: 1;
+  pointer-events: auto;
+  background: rgba(5, 20, 67, 0.62);
+  border-color: rgba(243, 243, 224, 0.35);
+  backdrop-filter: blur(4px);
+}
+
+/* Focus makes it appear whether or not the hint is showing — a keyboard user
+   must be able to see where they are. */
+.hero-talk:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  background: rgba(5, 20, 67, 0.62);
+  border-color: rgba(243, 243, 224, 0.35);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.hero-talk.is-open {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero-talk-hint {
+  pointer-events: none;
+}
+
+/* --- the bubble ---------------------------------------------------------- */
+.hero-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: 1.2rem;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(22rem, 78vw);
+  padding: 0.85rem 1rem 0.6rem;
+  border-radius: 14px;
+  background: var(--color-primary);
+  color: #101010;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  animation: hero-bubble-in 250ms ease-out both;
+}
+
+.hero-bubble:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* The tail, pointing down at the character. */
+.hero-bubble::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 18px;
+  height: 18px;
+  transform: translateX(-50%) rotate(45deg);
+  background: var(--color-primary);
+  border-radius: 3px;
+  z-index: -1;
+}
+
+.hero-bubble-line {
+  margin: 0 0 0.55rem;
+  font-size: 1.02rem;
+  line-height: 1.42;
+  font-weight: 500;
+  /* Readable and selectable. This is a paragraph, not a picture of one. */
+  user-select: text;
+  animation: hero-line-in 250ms ease-out both;
+}
+
+.hero-bubble-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.hero-bubble-next {
+  flex: 1;
+  padding: 0.3rem 0.6rem;
+  border: 1px dashed rgba(0, 0, 0, 0.45);
+  border-radius: 999px;
+  background: transparent;
+  color: #101010;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.hero-bubble-next:hover {
+  border-style: solid;
+  background: rgba(155, 64, 252, 0.14);
+}
+
+.hero-bubble-count {
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.55;
+}
+
+.hero-bubble-close {
+  width: 1.6rem;
+  height: 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  background: transparent;
+  color: #101010;
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.hero-bubble-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.hero-bubble-next:focus-visible,
+.hero-bubble-close:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+/* A short fade plus a slight rise. That is the entire reveal — no per-character
+   typing, which meant waiting 2.2s per line to be allowed to read it. */
+@keyframes hero-bubble-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes hero-line-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- narrow viewports ---------------------------------------------------- */
+@media (max-width: 580px) {
+  .hero-talk-anchor {
+    left: 50%;
+    top: 58%;
+  }
+
+  .hero-bubble {
+    max-width: min(20rem, 86vw);
+    padding: 0.75rem 0.85rem 0.55rem;
+  }
+
+  .hero-bubble-line {
+    font-size: 0.96rem;
+  }
+}
+
+/* Coarse pointers get a real target on the controls (App.css sets 44px minima
+   for the rest of the site's buttons). */
+@media (pointer: coarse) {
+  .hero-talk,
+  .hero-bubble-next,
+  .hero-bubble-close {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .hero-bubble-close {
+    border-radius: 999px;
+  }
+}
+
+/* Reduced motion: land on the final state, do not merely go faster. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-talk,
+  .hero-bubble-next,
+  .hero-bubble-close {
+    transition: none;
+  }
+
+  .hero-bubble,
+  .hero-bubble-line {
+    animation: none;
+  }
+}
+
+.hero-bubble.is-still,
+.hero-bubble.is-still .hero-bubble-line {
+  animation: none;
+}

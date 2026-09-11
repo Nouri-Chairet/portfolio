@@ -1,112 +1,203 @@
-.contact-container{
-    background-color: rgba(211, 57, 57, 0);
-    backdrop-filter: blur(6px);
-    width: 60vw;
-    height: 80vh;
-    margin-left: 10vw;
-    margin-right: 10vw;
-    border-radius: 2rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap:5%;
-}
-.contact-title{
-    font-size: 3rem;
-    color: #edd8a9;
-    filter: drop-shadow(5px 5px 10px #2f3030);
-    font-weight: bold;
-    text-align: center;
-    padding-top: 20px;
-    padding-bottom: 1vh;
-}
-.contact-text{
-    font-size: 2rem;
-    color: #ffffe9;
-    text-align: center;
-    padding-top: 20px;
-    padding-left: 50px;
-    padding-right: 50px;
-}
-.contact-icon{
-    max-width: 100px;
-    max-height: 100px;
-    transition: all  2s ease;
-    padding-bottom: 2vh;
-    
+/* The contact section: a UFO overhead, a cone of warm light beneath it, and
+   the content standing in the light.
+
+   This file lays the composition out; scene/ContactBeam.jsx draws the 3D to
+   match it by reading two empty boxes every frame:
+
+     .contact-ufo    the UFO's centre and width
+     .contact-beam   the cone — apex on its top edge, base on its bottom edge,
+                     base as wide as the box
+
+   So the 3D follows the CSS at every width, with no second set of numbers to
+   keep in step. The content stack is placed low in the beam, where the cone
+   is wide enough to hold it. */
+
+.contact {
+  /* The UFO's width, and from it the height of its box and where the beam
+     starts. One number, so the three cannot drift apart. */
+  --ufo-w: clamp(9rem, 17vw, 15rem);
+  --ufo-h: calc(var(--ufo-w) / 2.4);
+  --ufo-top: calc(var(--nav-h) + 4vh);
+
+  position: relative;
+  /* Above the canvas, which is z-index 1. */
+  z-index: 2;
+  height: 100%;
+  overflow: hidden;
+  color: #fff;
 }
 
-.contact-divider{
-    padding: 0.5vh;
-   
-}
-.contact-links{
-    padding-top: 3vh;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-}
-@media (max-width: 768px) {
-    .contact-content{
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-
-    }
-    .contact-container{
-        width: 100vw;
-        margin-left: 0;
-        margin-right: 0;
-        height: 30vh;
-    }
-    .contact-title{
-        font-size: 2.4rem;
-    }
-    .contact-text{
-        font-size: 1.1rem;
-        padding: 0;
-    }
-  
-    .contact-links{
-       padding: 0;
-    }
-    .github{
-        max-width: 54px;
-        max-height: 54px;
-    }
-    .linkedin{
-        max-width: 72px;
-        max-height: 72px;
-    }
-    
-}
-.contact-button{
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px dashed #ffffff;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.5);
-}
-.contact-button:hover{
-    background-color: #05101b;
-    color: #ffffff;
-}
-.contact-button-text{
-    transition: all 0.3s ease;
-}
-.contact-button-text:hover{
-    font-size: 1.56rem;
+.contact-ufo {
+  position: absolute;
+  top: var(--ufo-top);
+  left: 50%;
+  width: var(--ufo-w);
+  height: var(--ufo-h);
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
+.contact-beam {
+  position: absolute;
+  /* From the middle of the UFO's box: the cone's apex is hidden inside the
+     craft, so the light appears to come out of its underside. */
+  top: calc(var(--ufo-top) + var(--ufo-h) / 2);
+  bottom: 4vh;
+  left: 50%;
+  width: min(48rem, 96vw);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
 
+.contact-stack {
+  position: absolute;
+  left: 50%;
+  bottom: 11vh;
+  width: min(24rem, 86vw);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
 
+/* Contrast in the beam, measured (1st-percentile pixel behind each line, text
+   and its shadow hidden): heading 5.9 / 5.5 / 5.0:1 at 1440 / 1024 / 390,
+   buttons 8.1 / 7.7 / 6.3:1, email 7.1 / 7.1 / 6.1:1, location 5.4 / 5.5 /
+   5.1:1. The beam's steep falloff (scene/ContactBeam.jsx) is what keeps its
+   lower half dim enough; the buttons also carry the glass scrim. */
+.contact-title {
+  margin: 0 0 0.35rem;
+  font-size: clamp(2.25rem, 4.2vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.05;
+  color: #fff;
+  /* It stands in the brightest part of the light the content occupies; a
+     soft dark halo keeps its edges defined without a box behind it. */
+  text-shadow: 0 2px 18px rgba(5, 12, 40, 0.75);
+}
 
+/* --- buttons --------------------------------------------------------------
+   The shared glass card (App.css), square. Real <a> elements: a download, two
+   external links and a mailto — none of them is an action a <button> should
+   pretend to be. */
+.contact-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.8rem 1.4rem;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-decoration: none;
+  text-shadow: 0 1px 8px rgba(5, 12, 40, 0.7);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.contact-button:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+
+.contact-button--cv {
+  width: 100%;
+  font-weight: 800;
+}
+
+.contact-socials {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.contact-email {
+  margin-top: 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+  text-underline-offset: 0.25em;
+  text-shadow: 0 1px 10px rgba(5, 12, 40, 0.8);
+  overflow-wrap: anywhere;
+}
+
+.contact-email:hover {
+  text-decoration-color: #fff;
+}
+
+.contact-location {
+  margin-top: -0.4rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.72);
+  text-shadow: 0 1px 10px rgba(5, 12, 40, 0.8);
+}
+
+/* Visible focus on every control, on any ground the beam puts behind it: a
+   white ring with a dark hairline outside it, so it reads on warm light and on
+   navy alike. Square, like the buttons. */
+.contact-button:focus-visible,
+.contact-email:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(5, 12, 40, 0.85);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-button {
+    transition: none;
+  }
+}
+
+/* Short screens: pull the stack up a little and the UFO in, so the beam still
+   has room above the content. */
+@media (max-height: 700px) {
+  .contact {
+    --ufo-w: clamp(8rem, 13vw, 11rem);
+    --ufo-top: calc(var(--nav-h) + 2vh);
+  }
+
+  .contact-stack {
+    bottom: 7vh;
+    gap: 0.75rem;
+  }
+}
+
+/* --- no WebGL -------------------------------------------------------------
+   There is no canvas, so no UFO and no beam. The same two boxes paint a CSS
+   stand-in: a soft light source where the craft would be, and a blurred
+   triangle of the same warm light. The triangle is clipped on a pseudo-element
+   and blurred by its parent — a filter on the clipped element itself would be
+   clipped too, and the edges would stay hard. */
+.journey-container--flat .contact-ufo {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 226, 170, 0.75) 0%,
+    rgba(255, 170, 80, 0.25) 45%,
+    transparent 72%
+  );
+}
+
+.journey-container--flat .contact-beam {
+  filter: blur(14px);
+}
+
+.journey-container--flat .contact-beam::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(45% 0, 55% 0, 100% 100%, 0 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 206, 128, 0.42) 0%,
+    rgba(255, 164, 72, 0.16) 60%,
+    rgba(255, 150, 60, 0) 100%
+  );
+}

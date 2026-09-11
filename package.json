@@ -4,19 +4,24 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "assets": "npm run assets:character && npm run assets:ufo && npm run assets:images",
+    "assets": "npm run assets:character && npm run assets:ufo && npm run assets:images && npm run assets:handwriting && npm run assets:screenshots",
     "assets:character": "node scripts/merge-character.mjs --looks launch",
+    "assets:handwriting": "node scripts/generate-handwriting.mjs",
     "assets:images": "node scripts/convert-images.mjs",
     "assets:inspect": "gltf-transform inspect public/character.glb && gltf-transform inspect public/ufo.glb",
+    "assets:screenshots": "node scripts/generate-screenshots.mjs",
     "assets:ufo": "node scripts/optimize-ufo.mjs",
+    "assets:ufo:decimate": "blender --background --python scripts/decimate-ufo.py",
     "build": "vite build",
     "dev": "vite",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/montserrat": "^5.3.0",
     "@react-three/drei": "^9.117.2",
     "@react-three/fiber": "^8.17.10",
+    "@react-three/postprocessing": "^2.19.1",
     "@vercel/speed-insights": "^1.1.0",
     "gsap": "^3.13.0",
     "lottie-react": "^2.4.1",
@@ -38,6 +43,7 @@
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.11.0",
     "gltf-pipeline": "^4.1.0",
+    "opentype.js": "^2.0.0",
     "rollup-plugin-visualizer": "^7.0.1",
     "vite": "^5.4.10"
   }

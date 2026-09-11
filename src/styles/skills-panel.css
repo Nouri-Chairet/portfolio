@@ -1,0 +1,356 @@
+/* The hero's skills panel: the accessible half of the orbiting satellites.
+ *
+ * It takes the left third of the hero, which is the one part of that
+ * composition nothing else uses — the character sits at x +0.09 of the visible
+ * half-width (so, just right of centre), the scroll cue is top-right and the
+ * dialogue anchor is over the character at 54%/62%.
+ *
+ * Design tokens are NOT declared here; they live in styles/tokens.css, which
+ * App.jsx imports once. See CLAUDE.md rule 5. */
+
+.hero-skills {
+  position: absolute;
+  left: 2.2%;
+  /* Centred in the space BELOW the navbar, not in the hero as a whole.
+     `top: 46%` was fine while the panel was 470px tall; at 748px the top of it
+     — the headline and the first line of the intro — went under the fixed
+     header. Shifting the centre down by half the navbar's height is the same
+     thing as centring in what is actually visible. */
+  top: calc(50% + var(--nav-h) / 2);
+  z-index: 3;
+  /* Real padding, so the scrim below has somewhere to sit that is not on top
+     of the words. box-sizing is border-box globally (App.css). */
+  padding: 1.15rem 1.5rem 1.25rem;
+  /* Widened with the type. At the old 26rem the enlarged 15.5px blurbs ran to
+     three and four lines each, and five rows of that overflowed the hero
+     vertically — the panel got wider so it would not have to get taller. */
+  width: min(42vw, 30rem);
+  /* No max-height and no overflow. Both were defensive, and both were worse
+     than the thing they defended against: a scroll container clips in BOTH
+     axes, so it cut the scrim off, and an absolutely positioned child hanging
+     past the padding box counted toward scrollHeight and produced a scrollbar
+     with nothing to scroll to. The copy here is five short lines; if a very
+     short viewport ever pushes it past the hero, it spills and stays readable,
+     which is the outcome that actually matters. */
+  color: var(--color-text);
+
+  /* Revealed when the hero settles, so it does not compete with the entrance.
+     Driven by the state machine, not by a timer — see hooks/useIntroSequence. */
+  opacity: 0;
+  transform: translateY(-50%) translateX(-0.75rem);
+  pointer-events: none;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.hero-skills.is-visible {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+  pointer-events: auto;
+}
+
+/* The ground is the shared `.glass` card (App.css), not a scrim of its own.
+   It used to be a navy gradient that faded out toward the panel's edges so
+   the words seemed to float in the scene; the direction now is a card, and a
+   frosted one — the blur is what stops a star behind a word reading as a
+   point of light the size of a letter. Square, like everything here. */
+
+/* The panel's headline. It was a 12.5px violet-grey mono eyebrow; it is now
+   the first and largest thing in the panel.
+   The eyebrow's 0.16em tracking is gone: spread across 34px caps at 800
+   weight it read as a row of separate letters rather than a word, and
+   "SOFTWARE ENGINEER" no longer fit the column on one line. The capitals
+   stay — they are what still separates it from the sentence-case skill
+   headings below. */
+.hero-skills-headline {
+  margin: 0 0 0.7rem;
+  font-family: var(--font-sans);
+  /* 34px. Stepped down with the panel's width below. */
+  font-size: 2.125rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(5, 20, 67, 0.9);
+}
+
+.hero-skills-intro {
+  margin: 0 0 1.35rem;
+  /* 17.5px. Sized to hold its own against the 21px skill headings below —
+     at the old 0.95rem it read as a caption introducing a list, which is
+     backwards: it is the first thing here anyone reads. */
+  font-size: 1.09375rem;
+  line-height: 1.55;
+  color: var(--color-primary);
+  /* The panel sits over a star field, so the copy carries its own ground
+     rather than relying on the sky being dark in that particular spot. */
+  text-shadow: 0 1px 10px rgba(5, 20, 67, 0.9);
+}
+
+.hero-skills-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  /* Spacing is what separates the rows now. It has to be: the boxes that used
+     to do that job are gone, and five headings 21px tall with nothing between
+     them read as one paragraph. */
+  gap: 1.15rem;
+}
+
+/* Each row is a button because a satellite cannot hold focus and a touch
+   screen has no hover.
+   ------------------------------------------------------------------ flat
+   No background, no border box, no radius, in any state. The row is text with
+   a rule beside it; the affordance is the highlight it produces out in the
+   scene, not chrome drawn around the words. Every corner in this panel is
+   square on purpose — there is no border-radius anywhere in this file. */
+.hero-skill {
+  display: block;
+  width: 100%;
+  padding: 0.1rem 0 0.1rem 0.85rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  /* THE ACTIVE STATE, and the load-bearing half of it. The removed box was
+     carrying the whole hover/focus correspondence with the orbiting
+     satellites, so something had to take it over or that interaction would
+     have died silently with the styling change.
+     Declared at full width and merely transparent at rest rather than being
+     added when active: a border that appears on hover would reflow the text
+     0.19rem sideways every time the pointer crossed it. */
+  border: 0;
+  border-left: 3px solid color-mix(in srgb, var(--color-text) 20%, transparent);
+  transition: border-left-color 0.25s ease, color 0.25s ease;
+}
+
+.hero-skill:hover,
+.hero-skill:focus-visible,
+.hero-skill.is-active {
+  /* The satellite's own colour, at full saturation — this rule is now the
+     panel's only copy of it, so it is not diluted. */
+  border-left-color: var(--skill-color);
+}
+
+/* Square, like everything else here. */
+.hero-skill:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 0;
+}
+
+.hero-skill-title {
+  display: block;
+  /* 21px. */
+  font-size: 1.3125rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+  text-shadow: 0 1px 10px rgba(5, 20, 67, 0.9);
+}
+
+/* The other half of the colour link. With the dots gone this is what tells a
+   visitor that this row and that moving node are the same thing.
+   Lifted toward white rather than set to the raw hex: it is the "brightness
+   lift" the flat treatment needs to register without a box, and it is also
+   what keeps the violet legible — #9b40fc on the navy scrim is 3.8:1, which
+   only passes because the heading is large and bold. Mixed 82/18 with white
+   it is 5.0:1 and passes as ordinary body text, with the hue untouched. It
+   matches the scene better too: the satellites are bloomed, so out there the
+   colour already reads brighter than its own swatch. */
+.hero-skill.is-active .hero-skill-title,
+.hero-skill:hover .hero-skill-title {
+  color: color-mix(in srgb, var(--skill-color) 82%, #fff);
+}
+
+.hero-skill-blurb {
+  display: block;
+  margin-top: 0.3rem;
+  /* 15.5px. */
+  font-size: 0.96875rem;
+  line-height: 1.5;
+  /* Opacity replaced by a real colour: 0.8 over a semi-transparent scrim over
+     a star field makes the contrast ratio a function of which star is behind
+     the word. A solid colour is a number that can be checked. */
+  color: #b9cde0;
+  text-shadow: 0 1px 10px rgba(5, 20, 67, 0.9);
+}
+
+.hero-skills-note {
+  margin: 1.25rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #93a9c0;
+}
+
+/* Short desktop viewports. The enlarged type and the CV's profile make this
+   panel 856px tall, and a 900p laptop has 832px below the navbar, a 768p one
+   700 — measured, not guessed. What gets trimmed is SPACING, never the type
+   sizes: the sizes are the point of this panel, the gaps are not. (Was
+   ≤860px tall while the intro was shorter.) */
+@media (min-width: 1025px) and (max-height: 960px) {
+  .hero-skills {
+    padding: 0.7rem 1.5rem 0.75rem;
+  }
+
+  .hero-skills-intro {
+    margin-bottom: 0.85rem;
+    line-height: 1.45;
+  }
+
+  .hero-skills-list {
+    gap: 0.7rem;
+  }
+
+  .hero-skill-blurb {
+    margin-top: 0.2rem;
+    line-height: 1.45;
+  }
+
+  /* The one piece of copy here that describes the decoration rather than the
+     person. If something has to go on a short screen, it is this. */
+  .hero-skills-note {
+    display: none;
+  }
+}
+
+/* Shorter still. Spacing alone cannot buy enough room, so the blurbs go — the
+   same call the ≤1024px width breakpoint already makes, for the same reason.
+   The headings and the intro keep their full size. */
+@media (min-width: 1025px) and (max-height: 780px) {
+  .hero-skill-blurb {
+    display: none;
+  }
+
+  .hero-skills-list {
+    gap: 0.85rem;
+  }
+}
+
+/* Landscape phones and small tablets: the panel would swallow the character,
+   so the blurbs collapse and the rows become a compact stack of names. */
+@media (max-width: 1024px) {
+  .hero-skills {
+    width: min(52vw, 23rem);
+    max-height: 56vh;
+    padding: 1rem 1.15rem;
+  }
+
+  .hero-skills-headline {
+    /* 26px: the widest size at which the caps still hold one line in a
+       23rem column. */
+    font-size: 1.625rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .hero-skills-intro {
+    /* 16px. Stepped down from the desktop 17.5px, not back to the old caption
+       size: the copy is four sentences now and at half the viewport width it
+       has to stay a paragraph someone reads rather than skims past. */
+    font-size: 1rem;
+    margin-bottom: 1.1rem;
+  }
+
+  /* Names only at this width — with the blurbs gone the rows are short, so
+     they do not need desktop's full separation to read as distinct. */
+  .hero-skills-list {
+    gap: 0.7rem;
+  }
+
+  .hero-skill-title {
+    /* 19px. */
+    font-size: 1.1875rem;
+  }
+
+  .hero-skill-blurb,
+  .hero-skills-note {
+    display: none;
+  }
+}
+
+/* Portrait phones: there is no "one side" left, so the panel becomes the top
+   of the hero and the character keeps the bottom. The scroll cue is already
+   bottom-centre at this width and the dialogue takes the lower half. */
+@media (max-width: 580px) {
+  .hero-skills {
+    left: 3%;
+    right: 3%;
+    top: calc(var(--nav-h) + 0.5rem);
+    width: auto;
+    max-height: 36vh;
+    padding: 0.9rem 1rem 1rem;
+    transform: translateY(0) translateX(-0.75rem);
+  }
+
+  .hero-skills.is-visible {
+    transform: translateY(0) translateX(0);
+  }
+
+  .hero-skills-headline {
+    /* 24px. */
+    font-size: 1.5rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .hero-skills-intro {
+    margin-bottom: 0.9rem;
+    /* 15px. The floor: below this the copy stops being primary content and
+       goes back to being a caption, which is the thing this redesign was
+       undoing. It costs vertical space, which is why the rows below wrap
+       horizontally instead of stacking. */
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .hero-skills-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    /* Wider than desktop's proportionally, because here the gap is separating
+       rows AND columns and a wrapped run of names closes up fast. */
+    column-gap: 1.1rem;
+    row-gap: 0.6rem;
+  }
+
+  /* Still the left rule, still square, still no fill — the chips these used to
+     be were a box by another name. */
+  .hero-skill {
+    width: auto;
+    padding: 0 0 0 0.55rem;
+    border-left-width: 3px;
+  }
+
+  .hero-skill-title {
+    /* 16px. */
+    font-size: 1rem;
+  }
+}
+
+/* Reduced motion: the panel is present, not arriving. No slide, no fade —
+   the final visual state, reached without the movement. The satellites it
+   describes are parked at their starting phases for the same reason. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-skills {
+    transition: none;
+    transform: translateY(-50%);
+  }
+
+  .hero-skills.is-visible {
+    transform: translateY(-50%);
+  }
+
+  .hero-skill {
+    transition: none;
+  }
+
+  @media (max-width: 580px) {
+    .hero-skills,
+    .hero-skills.is-visible {
+      transform: none;
+    }
+  }
+}

@@ -5,7 +5,7 @@
 
      z-index 0 (auto) .hero / .journey-container backgrounds, .starfield, .hero-img
      z-index 1        .scene-root  <-- this canvas
-     z-index 2+       .hero-btn, .hero-intro, and any other DOM UI
+     z-index 2+       .hero-cue, .hero-talk-anchor, and any other DOM UI
 
    That ordering reproduces the pre-refactor paint order, when each <Canvas>
    was an unpositioned child of .model / .nouri and so painted above the
@@ -22,6 +22,8 @@
 .scene-root {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: 1;
   pointer-events: none;
 }

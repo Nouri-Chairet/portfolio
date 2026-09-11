@@ -44,7 +44,7 @@ const StyledWrapper = styled.div`
     align-items: center;
     justify-content: center;
     color: white;
-    font-family: Montserrat;
+    font-family: var(--font-sans);
     font-weight: bold;
     padding: 1em 2em 1em 1em;
     border-radius: 20px;

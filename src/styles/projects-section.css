@@ -1,0 +1,474 @@
+/* Projects: one continuous voyage past a world per project.
+
+   This replaced one pinned full-viewport panel per project. Those panels were
+   sequential — each with its own ScrollTrigger — which left a measured 360 px
+   of scroll with nothing on screen between one planet and the next. There is
+   now one pinned stage and one master timeline; see sections/ProjectsSection.jsx.
+
+   The planets are 3D in the shared canvas (z-index 1); this copy sits above at
+   z-index 2. */
+
+/* No z-index here on purpose: `position: relative` with `z-index: auto` does
+   not open a stacking context, so the copy's z-index 2 is compared against the
+   canvas's z-index 1 in the root context and wins. Giving this element a
+   z-index would trap the copy underneath the star field. */
+.projects-section {
+  position: relative;
+  background: linear-gradient(180deg, #051443 0%, #0a1a55 45%, #051443 100%);
+}
+
+/* The scroll distance. Its height is set inline from LEG_VH x LEG_COUNT, so
+   the timeline's length and the page's length cannot drift apart. */
+.voyage-track {
+  position: relative;
+  width: 100%;
+}
+
+/* The pinned frame the whole voyage plays inside. One viewport, held still
+   while the camera travels behind it.
+
+   `z-index: 2` is load-bearing and not obvious. ScrollTrigger pins by setting
+   `position: fixed` on this element, and a fixed element opens a stacking
+   context — so the panels' own `z-index: 2` stopped being compared against the
+   canvas in the root context and became a private ordering inside a context
+   whose own z-index was `auto`. The whole stage painted underneath the star
+   field: every panel reported opacity 1 and none of them was visible. This is
+   the same trap the note on .projects-section warns about, sprung by the pin
+   rather than by a stylesheet. */
+.voyage-stage {
+  position: relative;
+  z-index: 2;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Every panel occupies the same box and crossfades with its neighbours, which
+   is the entire point: two panels are visible at once during a transition, so
+   they cannot be laid out in flow. */
+/* Centred by flex, NOT by `top: 50%; transform: translateY(-50%)`.
+   The master timeline animates x and y on this element, and GSAP writes those
+   as `transform: translate(...)` — which replaces the centring transform
+   wholesale the first time the panel is touched. The copy silently dropped
+   half its own height down the frame and the Explore button fell off the
+   bottom edge. Anything GSAP animates cannot also be carrying layout. */
+.voyage-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  /* Centre the card in what is visible BELOW the fixed navbar, not in the
+     whole frame: the longer CV entries are nearly a viewport tall on a 768px
+     laptop, and centred in the full height their first line sat under the
+     bar. */
+  padding-top: var(--nav-h);
+  width: min(42%, 32rem);
+  pointer-events: none;
+  color: #fff;
+}
+
+/* The card is what the master timeline fades, not the panel: see the note in
+   ProjectsSection on why the backdrop-filter and the opacity must be on the
+   same element. Hidden until the timeline brings it in. Scoped to the stage,
+   so the flat stack's cards are simply visible. */
+.voyage-stage .voyage-copy {
+  opacity: 0;
+}
+
+/* Sides alternate with the stop, opposite the planet, so the copy is never
+   competing with a world for the same pixels — and the two panels mid-
+   crossfade are never on top of each other. See ProjectsSection for why this
+   survived the character leaving the voyage. */
+.voyage-panel[data-side='left'] {
+  left: clamp(1.5rem, 7vw, 8rem);
+}
+
+.voyage-panel[data-side='right'] {
+  right: clamp(1.5rem, 7vw, 8rem);
+  text-align: right;
+}
+
+.voyage-panel[data-side='right'] .project-tech {
+  justify-content: flex-end;
+}
+
+/* The copy's ground: the shared glass card (App.css). It used to be a navy
+   scrim fading out toward the panel's edges; the direction now is a card.
+
+   The world ahead of you is deliberately visible from the stop you are at —
+   that overlap is the whole point of the voyage — and it lands wherever the
+   geometry puts it, which is sometimes behind a paragraph. The blur is what
+   keeps that legible: a planet behind the words becomes a wash of its colour
+   rather than a surface with detail competing with the letterforms. */
+.voyage-copy {
+  width: 100%;
+  padding: 1.9rem 2.1rem 2rem;
+}
+
+/* Only the panel being read takes pointer events. The rest are at or near
+   opacity 0, and opacity does not stop a click: panels on the same side share
+   a box, so an invisible Explore button could otherwise take the click meant
+   for the visible one. `data-current` is set from the master timeline's
+   progress (ProjectsSection, handleUpdate). */
+.voyage-stage .project-link {
+  pointer-events: none;
+}
+
+.voyage-stage .voyage-panel[data-current] .project-link {
+  pointer-events: auto;
+}
+
+/* --- the skills stop ------------------------------------------------------ */
+/* The last rest position: centred, full width, no side. The card inside sets
+   its own width (styles/skills-reference.css). */
+.voyage-panel.voyage-panel--skills {
+  left: 0;
+  right: 0;
+  width: auto;
+  justify-content: center;
+}
+
+/* Short landscape screens — 768p and 720p laptops. Four CV bullets plus a
+   two-line tagline made a card ~700px tall against 652–700px of room below the
+   navbar. What gives is spacing and the type's upper clamp, never content:
+   every bullet stays on the card. */
+@media (min-aspect-ratio: 1/1) and (max-height: 820px) {
+  .voyage-copy {
+    padding: 1.25rem 1.6rem 1.35rem;
+  }
+
+  .project-meta {
+    margin-bottom: 0.35rem;
+  }
+
+  .project-title {
+    margin-bottom: 0.35rem;
+    font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  }
+
+  .project-tagline {
+    margin-bottom: 0.8rem;
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  }
+
+  .project-highlights {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .project-highlights li + li {
+    margin-top: 0.25rem;
+  }
+
+  .project-tech {
+    margin-bottom: 1rem;
+  }
+
+  .project-link {
+    padding: 0.55rem 1.2rem;
+  }
+}
+
+/* --- flat fallback: reduced motion, or no WebGL -------------------------- */
+/* A plain stack. Nothing pinned, nothing scrubbed, no snapping. */
+.voyage-flat-panel {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.voyage-flat .voyage-panel {
+  position: relative;
+  top: auto;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+  width: min(46%, 34rem);
+  margin-left: clamp(1.5rem, 8vw, 9rem);
+  text-align: left;
+}
+
+.voyage-flat .voyage-panel .project-tech {
+  justify-content: flex-start;
+}
+
+/* --- the copy's hierarchy -------------------------------------------------
+   Title, tagline, description: told apart by WEIGHT AND SIZE ONLY. All three
+   are white; the lower two step down in opacity, which is a quieter white,
+   not a colour. The violet year, the magenta italic tagline and the violet
+   tech chips all colour-coded the text and are gone.
+
+   Opacities are applied to the colour, never to the element — element opacity
+   would also fade the text-shadow and is what the master timeline animates.
+
+   Contrast, measured on the glass card over the live scene at 1440, 1024 and
+   390 (1st-percentile pixel behind each line, all seven CV entries): all clear
+   AA. The tightest are the bullets over a planet — 5.7:1 at 1024 (Smooth
+   Algo) and 5.6:1 at 390 (Café POS), where the portrait scrim below is what
+   gets them there (3.9:1 with the lighter one). */
+
+/* The CV's role and date line: "Software Engineering Intern · Startup ·
+   Jun 2026 – Jul 2026 (2 months)". */
+.project-meta {
+  margin-bottom: 0.6rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.project-period {
+  white-space: nowrap;
+}
+
+.project-title {
+  margin-bottom: 0.55rem;
+  font-size: clamp(2rem, 4.4vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.05;
+  color: #fff;
+}
+
+.project-tagline {
+  margin-bottom: 1.2rem;
+  /* Roughly a third of the title: "noticeably smaller" at every width. */
+  font-size: clamp(1rem, 1.45vw, 1.25rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* The CV's bullets: the description body, so the description's weight and
+   opacity. A list because the CV is a list — each line is one thing done. */
+.project-highlights {
+  margin: 0 0 1.5rem;
+  padding-left: 1.1em;
+  max-width: 34rem;
+  list-style: disc;
+  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* hero.css sets a global `li { display: inline; padding: 0 1rem; color: … }`.
+   An inline <li> has no marker, so the bullets vanished with it. */
+.project-highlights li {
+  display: list-item;
+  padding: 0;
+  color: inherit;
+}
+
+.project-highlights li + li {
+  margin-top: 0.4rem;
+}
+
+.voyage-panel[data-side='right'] .project-highlights {
+  /* Right-aligned copy keeps its bullets on the left of each line; a marker
+     hanging off the ragged left edge of right-aligned text reads as noise. */
+  text-align: left;
+  margin-left: auto;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin-bottom: 1.6rem;
+  padding: 0;
+}
+
+/* Neutral hairline tags: square, like the card they sit on, and without the
+   violet fill that made the stack read as a second colour-coded layer. */
+.project-tech li {
+  display: inline-block;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0;
+}
+
+/* This is a <button> (the planet's keyboard-reachable stand-in), so it needs
+   the UA button defaults cleared explicitly — otherwise it renders with the
+   platform's light `buttonface` background and the cream text vanishes into
+   it. */
+.project-link {
+  display: inline-block;
+  pointer-events: auto;
+  padding: 0.7rem 1.4rem;
+  font: inherit;
+  font-weight: bold;
+  color: var(--color-primary, #f3f3e0);
+  background: transparent;
+  border: 2px dashed var(--color-primary, #f3f3e0);
+  border-radius: 0;
+  cursor: pointer;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.project-link:hover,
+.project-link:focus-visible {
+  border-style: solid;
+  background: rgba(243, 243, 224, 0.09);
+}
+
+.project-link--none {
+  pointer-events: none;
+  border-style: dotted;
+  opacity: 0.6;
+}
+
+/* Portrait: the planet centres (see ProjectPlanets), so the copy drops to the
+   lower half and stops competing with it for the same space. Sides stop
+   alternating here — there are no sides on a narrow screen. */
+@media (max-aspect-ratio: 1/1) {
+  .voyage-panel,
+  .voyage-panel[data-side='left'],
+  .voyage-panel[data-side='right'] {
+    left: 5%;
+    right: 5%;
+    width: auto;
+    top: 0;
+    bottom: 0;
+    align-items: flex-end;
+    padding-bottom: 8vh;
+    text-align: left;
+  }
+
+  .voyage-panel[data-side='right'] .project-tech {
+    justify-content: flex-start;
+  }
+
+  .voyage-copy {
+    padding: 1.15rem 1.2rem 1.3rem;
+  }
+
+  /* Portrait is the one layout where the card sits OVER its planet — the
+     planet centres and the copy drops to the lower half — and a lit planet
+     behind white text took it below AA: 2.2:1 on the School Management title,
+     3.2:1 on its description, at 390px. The glass alone cannot fix that (its
+     fill is white; raising it brightens the ground), so the navy scrim goes
+     under the sheen here. Landscape keeps the planet beside the card and
+     passes without it. */
+  .voyage-copy.glass {
+    background:
+      linear-gradient(var(--glass-fill), var(--glass-fill)),
+      var(--glass-scrim-strong);
+  }
+
+  /* Small phones (360x740 and the like). The long CV entries — four bullets
+     and a two-line tagline — measured ~700px against ~620px of room, and a
+     bottom-aligned card that is too tall grows upward under the navbar. Same
+     rule as the short-landscape tier: spacing and type size give, content
+     does not. */
+  @media (max-height: 780px) {
+    .voyage-panel,
+    .voyage-panel[data-side='left'],
+    .voyage-panel[data-side='right'] {
+      padding-bottom: 2vh;
+    }
+
+    .voyage-copy {
+      padding: 0.9rem 1rem 1rem;
+    }
+
+    .project-meta {
+      margin-bottom: 0.25rem;
+      font-size: 0.8125rem;
+    }
+
+    .project-title {
+      margin-bottom: 0.3rem;
+      font-size: 1.75rem;
+    }
+
+    .project-tagline {
+      margin-bottom: 0.6rem;
+      font-size: 0.9375rem;
+    }
+
+    .project-highlights {
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+      line-height: 1.4;
+    }
+
+    .project-highlights li + li {
+      margin-top: 0.2rem;
+    }
+
+    .project-tech {
+      gap: 0.35rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .project-tech li {
+      padding: 0.2rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .project-link {
+      padding: 0.5rem 1rem;
+    }
+  }
+
+  /* The skills card fills the width and stays centred: it is the only thing
+     on screen at its stop, so it does not have to share the frame with a
+     planet the way the project copy does. */
+  .voyage-panel.voyage-panel--skills {
+    left: 0;
+    right: 0;
+    align-items: center;
+    padding: var(--nav-h) 0 0;
+  }
+
+  .voyage-flat .voyage-panel {
+    width: min(90%, 34rem);
+    margin: 0 auto 12vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-link {
+    transition: none;
+  }
+}
+
+/* --- no-WebGL stand-in for the planet ----------------------------------- */
+/* Same palette and roughly the same place in the layout as the 3D planet, so
+   the panel keeps its composition on devices that get no canvas. */
+.project-orb {
+  position: absolute;
+  right: 8%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(34vh, 42vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 30%, var(--orb-high) 0%, var(--orb-mid) 42%, var(--orb-deep) 78%);
+  box-shadow:
+    0 0 3rem 0.4rem color-mix(in srgb, var(--orb-glow) 45%, transparent),
+    inset -1.4rem -1rem 3rem rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .project-orb {
+    right: 50%;
+    top: 22%;
+    transform: translateX(50%);
+    width: min(30vh, 56vw);
+  }
+}
