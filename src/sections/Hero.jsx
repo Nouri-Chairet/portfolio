@@ -115,7 +115,9 @@ export default function Hero() {
           <span className="hero-cue-arrow" aria-hidden="true" />
         </button>
         <div ref={starRef} className="hero-img">
-          <img src={star} alt="" />
+          {/* Sized, so the box is reserved before it decodes: an unsized
+              decorative image is a layout shift waiting for a slow network. */}
+          <img src={star} alt="" width="120" height="120" />
         </div>
 
         {/* Opt-in, and nothing plays until it is asked to. */}

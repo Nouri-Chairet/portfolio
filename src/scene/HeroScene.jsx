@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import * as THREE from 'three';
-import Astronaut from './Astronaut';
+import Astronaut, { ARRIVAL_REST_X } from './Astronaut';
 import Ufo from './Ufo';
 import DepartureTrail from './DepartureTrail';
 import SkillSatellites from './SkillSatellites';
@@ -29,13 +29,29 @@ gsap.registerPlugin(MotionPathPlugin);
  */
 
 /**
- * Where the character sits, in normalised screen terms: 0 is centre, ±1 is the
- * edge. Derived from where the old `.model` scissor box put it — it read at
- * about x +0.09, y -0.62 of the full viewport — and kept proportional so the
- * composition survives a resize instead of being pinned to one hard-coded x.
+ * Where the character sits, as a fraction of the visible half-extent: 0 is
+ * centre, ±1 is the edge. The group is placed so that the character's REST
+ * position (ARRIVAL_REST_X in `inner`) lands on this fraction — placement is
+ * in screen terms, and the arrival path's own units never reach the frame.
+ *
+ * Landscape 0.55 reproduces exactly where the old maths put it at 1440x900
+ * (group offset 0.09 of half-width, plus the path's 8 units).
+ *
+ * PORTRAIT IS A DIFFERENT COMPOSITION, not the same one squeezed. A phone has
+ * about 5 world units of half-width where a laptop has 17, so an offset that
+ * reads as "just right of centre" on a laptop is off the edge on a phone: at
+ * 390 the character, its satellites and the thing "tap me twice" refers to
+ * were all outside the viewport. Portrait centres it and drops it into the
+ * lower band, under the skills panel — the stacked layout, with the character
+ * as the shorter band below the text.
  */
-const HERO_X_FRACTION = 0.09;
+const HERO_X_FRACTION = 0.55;
 const HERO_Y_FRACTION = -0.62;
+const HERO_X_FRACTION_PORTRAIT = 0;
+const HERO_Y_FRACTION_PORTRAIT = -1.02;
+
+/** Below this aspect the portrait composition takes over. */
+const PORTRAIT_ASPECT = 0.95;
 
 /**
  * Camera distance to the character's plane.
@@ -113,7 +129,9 @@ const HeroScene = ({
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 600) setScale(0.9);
+      // 0.8 on a phone, not 0.9: portrait stacks the skills panel above the
+      // character, and at 0.9 the head sat behind the panel's lower edge.
+      if (window.innerWidth < 600) setScale(0.8);
       else if (window.innerWidth < 1024) setScale(0.8);
       else setScale(1);
     };
@@ -134,9 +152,15 @@ const HeroScene = ({
     const g = group.current;
     if (!g) return;
     const halfHeight = HERO_DEPTH * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    const halfWidth = halfHeight * (size.width / size.height);
-    g.position.x = camera.position.x + HERO_X_FRACTION * halfWidth;
-    g.position.y = camera.position.y + HERO_Y_FRACTION * halfHeight;
+    const aspect = size.width / size.height;
+    const halfWidth = halfHeight * aspect;
+    const portrait = aspect < PORTRAIT_ASPECT;
+    const xFraction = portrait ? HERO_X_FRACTION_PORTRAIT : HERO_X_FRACTION;
+    const yFraction = portrait ? HERO_Y_FRACTION_PORTRAIT : HERO_Y_FRACTION;
+    // Minus the rest offset: the character lands ON the fraction, whatever the
+    // arrival path's own numbers are.
+    g.position.x = camera.position.x + xFraction * halfWidth - ARRIVAL_REST_X;
+    g.position.y = camera.position.y + yFraction * halfHeight;
     g.position.z = camera.position.z - HERO_DEPTH;
   });
 

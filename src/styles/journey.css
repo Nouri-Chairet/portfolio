@@ -6,6 +6,12 @@
 .journey-container {
   position: relative;
   width: 100%;
+  /* svh, not vh or dvh: `vh` is the LARGEST viewport (address bar hidden), so
+     on a phone with the bar showing this section is taller than the screen and
+     its bottom sits behind browser chrome. `dvh` tracks the bar live, which
+     re-lays-out the page mid-scroll and makes a pinned section re-measure.
+     `svh` is the smallest viewport: stable, and always fully visible. */
   height: 100vh;
+  height: 100svh;
   background: linear-gradient(22deg, rgb(69, 65, 107) 0%, #051443 109%);
 }

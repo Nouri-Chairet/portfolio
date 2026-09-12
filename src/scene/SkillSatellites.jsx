@@ -64,6 +64,11 @@ const CENTER_FRACTION = 0.56;
 
 /** Core radius, as a fraction of the character's height. */
 const CORE_RADIUS = 0.045;
+
+/** How many satellites a narrow (portrait phone) frame carries, and how much
+ *  their orbits are trimmed to stay inside it. */
+const NARROW_COUNT = 4;
+const NARROW_ORBIT = 0.85;
 /**
  * Halo sprite size, and the label's box height — same units.
  *
@@ -317,6 +322,29 @@ const SkillSatellites = ({
   const labelMesh = useRef();
   const dpr = useThree((s) => s.viewport.dpr);
 
+  const viewport = useThree((state) => state.size);
+  /**
+   * A phone gets four satellites on slightly tighter orbits, not five on
+   * wider ones.
+   *
+   * The instinct is to widen the orbits so they stop crossing the character —
+   * but the frame is only about 10 world units across in portrait (against 34
+   * on a laptop), and the widest orbit here is already 0.7 of the character's
+   * height, about 5.2 units. Widening puts satellites off the edge of the
+   * screen, which is worse than crossing. Dropping one and trimming the radii
+   * a little thins the traffic instead, and the fifth skill is still in the
+   * panel, which is the copy that matters (rule 19).
+   */
+  const narrow = viewport.width < 600;
+  const shown = useMemo(() => {
+    const list = narrow ? SKILLS.slice(0, NARROW_COUNT) : SKILLS;
+    if (!narrow) return list;
+    return list.map((skill) => ({
+      ...skill,
+      orbit: { ...skill.orbit, a: skill.orbit.a * NARROW_ORBIT, b: skill.orbit.b * NARROW_ORBIT },
+    }));
+  }, [narrow]);
+
   const atlas = useMemo(() => (labels ? getSkillAtlas() : null), [labels]);
   const sizeMul = useMemo(() => scaleOverride(), []);
   const gl = useThree((s) => s.gl);
@@ -326,7 +354,7 @@ const SkillSatellites = ({
   /** Per-satellite live state. Mutated in useFrame, never in React. */
   const sats = useMemo(
     () =>
-      SKILLS.map((skill) => ({
+      shown.map((skill) => ({
         id: skill.id,
         basis: orbitBasis(skill.orbit),
         orbit: skill.orbit,
@@ -337,7 +365,7 @@ const SkillSatellites = ({
         hi: 0,
         rate: 1,
       })),
-    []
+    [shown]
   );
 
   // The character is measured rather than assumed, so a re-export at a
@@ -352,7 +380,7 @@ const SkillSatellites = ({
   }, [character]);
 
   const geometries = useMemo(() => {
-    const count = SKILLS.length;
+    const count = shown.length;
 
     // Non-indexed, so recomputing normals gives one normal per face. Faceted
     // is the point: a smooth-shaded ball is what a planet looks like.
@@ -387,7 +415,7 @@ const SkillSatellites = ({
     label.setIndex(new THREE.BufferAttribute(new Uint16Array(count * 6), 1));
 
     return { core, halo, label };
-  }, [sats]);
+  }, [sats, shown.length]);
 
   const coreUniforms = useMemo(() => ({ uOpacity: { value: 0 } }), []);
   const haloUniforms = useMemo(
@@ -421,12 +449,12 @@ const SkillSatellites = ({
       quat: new THREE.Quaternion(),
       scale: new THREE.Vector3(),
       color: new THREE.Color(),
-      order: SKILLS.map((_, i) => i),
-      depth: new Float32Array(SKILLS.length),
+      order: shown.map((_, i) => i),
+      depth: new Float32Array(shown.length),
       /** This frame's satellite positions, so the label pass need not re-derive them. */
-      places: SKILLS.map(() => new THREE.Vector3()),
+      places: shown.map(() => new THREE.Vector3()),
     }),
-    []
+    [shown]
   );
 
   const appear = useRef(0);
@@ -632,7 +660,7 @@ const SkillSatellites = ({
     const corner = geometries.label.attributes.aCorner;
     const uv = geometries.label.attributes.aUv;
 
-    SKILLS.forEach((skill, i) => {
+    shown.forEach((skill, i) => {
       const rect = atlas.rects.get(skill.id);
       if (!rect) return;
       const h = LABEL_HEIGHT * height * sizeMul;
@@ -660,9 +688,9 @@ const SkillSatellites = ({
 
   // --- pointer -------------------------------------------------------------
   /**
-   * Everything in the root scene is raycast from the shared app root (see
-   * SceneRoot's ViewEventBridge), so a pointer move over any DOM element lands
-   * here too. Rule 1's hit-area guard, in its root-scene form: a satellite
+   * Everything in the root scene is raycast from the shared app root (App
+   * passes it as the canvas's eventSource), so a pointer move over any DOM
+   * element lands here too. Rule 1's hit-area guard, in its root-scene form: a satellite
    * behind the skills panel must not steal the highlight from the row the
    * visitor is actually pointing at, and a press on a real control must not
    * also poke whatever happens to be behind it.
@@ -685,11 +713,11 @@ const SkillSatellites = ({
   const handleMove = useCallback(
     (event) => {
       if (!interactive || fromChrome(event)) return;
-      const skill = SKILLS[event.instanceId];
+      const skill = shown[event.instanceId];
       if (!skill) return;
       hoverSkill(skill.id);
     },
-    [interactive, fromChrome]
+    [interactive, fromChrome, shown]
   );
 
   const handleOut = useCallback(() => hoverSkill(null), []);
@@ -697,14 +725,14 @@ const SkillSatellites = ({
   const handleClick = useCallback(
     (event) => {
       if (!interactive || fromChrome(event)) return;
-      const skill = SKILLS[event.instanceId];
+      const skill = shown[event.instanceId];
       if (!skill) return;
       event.stopPropagation();
       // Pinning is the only route a touch screen has: there is no hover to
       // hold a label still with.
       toggleSkillPin(skill.id);
     },
-    [interactive, fromChrome]
+    [interactive, fromChrome, shown]
   );
 
   // Cursor feedback goes on the document — the canvas is pointer-events:none,
@@ -723,7 +751,7 @@ const SkillSatellites = ({
     <group ref={rig}>
       <instancedMesh
         ref={cores}
-        args={[geometries.core, undefined, SKILLS.length]}
+        args={[geometries.core, undefined, shown.length]}
         frustumCulled={false}
         visible={false}
       >
@@ -767,7 +795,7 @@ const SkillSatellites = ({
           See yieldsToPrecisePick in scene/Astronaut.jsx. */}
       <instancedMesh
         ref={hits}
-        args={[undefined, undefined, SKILLS.length]}
+        args={[undefined, undefined, shown.length]}
         frustumCulled={false}
         visible={false}
         userData={{ hitProxy: true, precisePick: true }}

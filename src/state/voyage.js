@@ -78,8 +78,30 @@ export const PLANET_RADIUS = 5.6;
  * reasoning as HERO_X_FRACTION in HeroScene.
  */
 export const PLANET_X_FRACTION = 0.56;
+/**
+ * Landscape phone: the copy card takes most of the width, so the world moves
+ * further out to stay clear of it.
+ */
+export const PLANET_X_FRACTION_SHORT = 0.68;
 /** Vertical offset of a planet from the camera's eye line. */
 export const PLANET_Y = 1.2;
+
+/**
+ * PORTRAIT. There are no sides on a phone — the planet centres — so the frame
+ * is shared top-to-bottom instead: the world takes the band under the navbar
+ * and the copy card sits below it. Raised by this much, and scaled down, so
+ * that band is about 250px tall on a 390x844 screen.
+ *
+ * Without it the planet sat dead centre, entirely behind the card: the card is
+ * opaque enough to read over it (rule 21's scrim), but a world you cannot see
+ * is not worth flying to.
+ */
+export const PLANET_Y_PORTRAIT = 9.1;
+export const PLANET_SCALE_PORTRAIT = 0.62;
+/** Below this aspect the portrait placement takes over. */
+export const PORTRAIT_ASPECT = 0.95;
+/** At or below this viewport height a landscape screen counts as short. */
+export const SHORT_VIEWPORT = 520;
 
 /** How far the camera leans away from the planet it is looking at. */
 export const CAM_SWAY = 3.2;

@@ -5,9 +5,11 @@
  * subject of the hero and the text is a caption on it, not the other way
  * round. */
 
-/* Anchored where the character stands. HeroScene places it at x +0.09 and
-   y -0.62 of the visible half-extent (fractions, not pixels, so the
-   composition survives a resize) — these percentages track that. */
+/* Anchored beside where the character stands. HeroScene places the character
+   at 0.55 of the visible half-width (fractions, not pixels, so the composition
+   survives a resize); this sits just inboard of it, so the label reads as
+   pointing at the character rather than covering it. Portrait and landscape
+   phones move it — see the media queries at the end of this file. */
 .hero-talk-anchor {
   position: absolute;
   left: 54%;
@@ -187,9 +189,11 @@
 
 /* --- narrow viewports ---------------------------------------------------- */
 @media (max-width: 580px) {
+  /* Low, over the saucer: the character is centred and fills the band below
+     the skills panel on a phone, and at 58% this label sat across its chest. */
   .hero-talk-anchor {
     left: 50%;
-    top: 58%;
+    top: 88%;
   }
 
   .hero-bubble {
@@ -204,6 +208,19 @@
 
 /* Coarse pointers get a real target on the controls (App.css sets 44px minima
    for the rest of the site's buttons). */
+/* Landscape phone: the skills panel takes the left half and the character the
+   right, so the desktop anchor put this label across the panel's skill rows. */
+@media (max-width: 1024px) and (max-height: 520px) and (min-aspect-ratio: 1/1) {
+  .hero-talk-anchor {
+    left: 72%;
+    top: 76%;
+  }
+
+  .hero-bubble {
+    max-width: min(18rem, 44vw);
+  }
+}
+
 @media (pointer: coarse) {
   .hero-talk,
   .hero-bubble-next,

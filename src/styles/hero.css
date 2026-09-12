@@ -46,9 +46,11 @@ a {
   position: relative;
   background: var(--color-space);
   display: flex;
+  /* svh, not vh or dvh — see styles/journey.css. */
   height: 100vh;
+  height: 100svh;
   width: 100%;
-  max-height: 100vh;
+  max-height: 100svh;
   color: var(--color-primary);
   overflow: hidden;
 }
@@ -187,18 +189,64 @@ a {
   50%      { transform: rotate(45deg) translate(3px, 3px); opacity: 1; }
 }
 
+/* Phones: the cue becomes the chevron alone, in the corner. Spelled out and
+   centred it competed with the dialogue hint for the one band of space under
+   the character; as an icon it keeps its 48px target and gets out of the way.
+   The words stay in the accessible name. */
 @media (max-width: 580px) {
   .hero-cue {
     top: auto;
-    bottom: 5vh;
-    right: 50%;
-    transform: translateX(50%);
-    padding: 0.7rem 1.2rem 0.55rem;
-    font-size: 0.95rem;
+    bottom: 2.5vh;
+    right: 4%;
+    transform: none;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+    border-radius: 0;
   }
+
+  .hero-cue-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
   .hero-cue:hover,
   .hero-cue:focus-visible {
-    transform: translateX(50%) translateY(2px);
+    transform: translateY(2px);
+  }
+}
+
+/* Landscape phone: 10vh is 39px, which is under the 68px navbar — and spelled
+   out, the cue reached across the character's head. Icon only, in the corner,
+   like the phone treatment. */
+@media (max-height: 520px) and (min-aspect-ratio: 1/1) {
+  .hero-cue {
+    top: calc(var(--nav-h) + 0.4rem);
+    right: 4%;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .hero-cue .hero-cue-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 }
 

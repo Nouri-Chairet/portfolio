@@ -64,8 +64,8 @@
 .hero-skills-headline {
   margin: 0 0 0.7rem;
   font-family: var(--font-sans);
-  /* 34px. Stepped down with the panel's width below. */
-  font-size: 2.125rem;
+  /* Tops out at 34px, down to 24px on a phone (styles/tokens.css). */
+  font-size: var(--text-2xl);
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: 0;
@@ -76,10 +76,10 @@
 
 .hero-skills-intro {
   margin: 0 0 1.35rem;
-  /* 17.5px. Sized to hold its own against the 21px skill headings below —
-     at the old 0.95rem it read as a caption introducing a list, which is
-     backwards: it is the first thing here anyone reads. */
-  font-size: 1.09375rem;
+  /* Sized to hold its own against the skill headings below — as a caption it
+     read as an introduction to a list, which is backwards: it is the first
+     thing here anyone reads. */
+  font-size: var(--text-base);
   line-height: 1.55;
   color: var(--color-primary);
   /* The panel sits over a star field, so the copy carries its own ground
@@ -145,8 +145,7 @@
 
 .hero-skill-title {
   display: block;
-  /* 21px. */
-  font-size: 1.3125rem;
+  font-size: var(--text-lg);
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.01em;
@@ -171,8 +170,7 @@
 .hero-skill-blurb {
   display: block;
   margin-top: 0.3rem;
-  /* 15.5px. */
-  font-size: 0.96875rem;
+  font-size: var(--text-sm);
   line-height: 1.5;
   /* Opacity replaced by a real colour: 0.8 over a semi-transparent scrim over
      a star field makes the contrast ratio a function of which star is behind
@@ -237,7 +235,6 @@
 @media (max-width: 1024px) {
   .hero-skills {
     width: min(52vw, 23rem);
-    max-height: 56vh;
     padding: 1rem 1.15rem;
   }
 
@@ -282,8 +279,7 @@
     right: 3%;
     top: calc(var(--nav-h) + 0.5rem);
     width: auto;
-    max-height: 36vh;
-    padding: 0.9rem 1rem 1rem;
+    padding: 0.85rem 1rem 0.9rem;
     transform: translateY(0) translateX(-0.75rem);
   }
 
@@ -294,22 +290,27 @@
   .hero-skills-headline {
     /* 24px. */
     font-size: 1.5rem;
-    margin-bottom: 0.45rem;
+    margin-bottom: 0.35rem;
   }
 
   .hero-skills-intro {
-    margin-bottom: 0.9rem;
-    /* 15px. The floor: below this the copy stops being primary content and
-       goes back to being a caption, which is the thing this redesign was
-       undoing. It costs vertical space, which is why the rows below wrap
-       horizontally instead of stacking. */
-    font-size: 0.9375rem;
-    line-height: 1.5;
+    margin-bottom: 0.7rem;
+    /* 13px: a line saved here is a line the character gets back below. */
+    /* 14px on a phone. The floor: below this the copy stops being primary
+       content and goes back to being a caption, which is the thing this
+       redesign was undoing. It costs vertical space, which is why the rows
+       below wrap horizontally instead of stacking — and why the panel has no
+       max-height any more. A cap does not shorten copy, it hides it: at 36vh
+       the card stopped at the paragraph and the five skill rows hung outside
+       it, over the planet and the character. */
+    font-size: 0.8125rem;
+    line-height: 1.45;
   }
 
   .hero-skills-list {
     flex-direction: row;
     flex-wrap: wrap;
+    row-gap: 0.5rem;
     /* Wider than desktop's proportionally, because here the gap is separating
        rows AND columns and a wrapped run of names closes up fast. */
     column-gap: 1.1rem;
@@ -327,6 +328,56 @@
   .hero-skill-title {
     /* 16px. */
     font-size: 1rem;
+  }
+}
+
+/* Landscape phone: about 320px of usable height beside the character, and
+   the copy still has to be all there. Type steps down, nothing is hidden. */
+@media (max-width: 1024px) and (max-height: 520px) and (min-aspect-ratio: 1/1) {
+  .hero-skills {
+    top: calc(var(--nav-h) + 0.4rem);
+    transform: none;
+    /* Wider, not smaller: the same paragraph in a wider column is fewer
+       lines, and height is the scarce axis on a 390px-tall screen. The
+       character sits at 0.55 of the half-width, well clear of this. */
+    width: min(58vw, 30rem);
+    padding: 0.7rem 0.9rem 0.75rem;
+  }
+
+  .hero-skills.is-visible {
+    transform: none;
+  }
+
+  .hero-skills-headline {
+    font-size: 1.25rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .hero-skills-intro {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    margin-bottom: 0.6rem;
+  }
+
+  .hero-skills-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 0.9rem;
+    row-gap: 0.4rem;
+  }
+
+  .hero-skill {
+    width: auto;
+    padding: 0 0 0 0.5rem;
+  }
+
+  .hero-skill-title {
+    font-size: 0.9375rem;
+  }
+
+  .hero-skill-blurb,
+  .hero-skills-note {
+    display: none;
   }
 }
 

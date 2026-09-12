@@ -202,7 +202,15 @@ const ProjectsSection = () => {
    */
   const snapping = useMemo(() => {
     if (typeof window === 'undefined') return true;
-    return new URLSearchParams(window.location.search).get('snap') !== '0';
+    if (new URLSearchParams(window.location.search).get('snap') === '0') return false;
+    // NEVER on a touch screen. Snapping is tuned against wheel notches and
+    // trackpad flicks; touch arrives as a fling with its own momentum curve,
+    // which the browser is already animating when the snap tween starts, and
+    // the two pull against each other. Rule 20's first principle is that a
+    // page must not fight live input, and the honest version of that on touch
+    // is to let go: the timeline still scrubs continuously, it just comes to
+    // rest wherever the visitor stopped.
+    return !window.matchMedia?.('(pointer: coarse)').matches;
   }, []);
 
   const setPanel = useCallback((index) => (node) => {
@@ -400,7 +408,10 @@ const ProjectsSection = () => {
   }, [flying, reducedMotion]);
 
   const trackStyle = useMemo(
-    () => ({ height: `${100 + LEG_COUNT * LEG_VH * 100}vh` }),
+    // svh for the same reason the stage uses it (styles/journey.css): the
+    // track's length has to agree with the pinned stage's height, and vh and
+    // svh differ by the address bar on a phone.
+    () => ({ height: `${100 + LEG_COUNT * LEG_VH * 100}svh` }),
     []
   );
 

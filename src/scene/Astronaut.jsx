@@ -44,6 +44,19 @@ export const FLY_IN_DURATION = 1.8;
 export const ARRIVAL_Y_OFFSET = 1.4;
 
 /**
+ * Where the arrival path ENDS on x, in `inner`-local units — the character's
+ * resting lateral offset, shared with Ufo.jsx (the two land on the same x, the
+ * character standing on the saucer).
+ *
+ * HeroScene subtracts this when it places the group, so the character's
+ * on-screen position is a fraction of the visible width rather than this
+ * constant. It was a landscape-era number: 8 units against a portrait
+ * half-width of about 5 put the whole character off the right edge of a
+ * phone.
+ */
+export const ARRIVAL_REST_X = 8;
+
+/**
  * The character's base yaw, radians, so it faces the camera instead of
  * standing square to the world axes and looking off to one side.
  *

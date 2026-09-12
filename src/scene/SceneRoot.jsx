@@ -343,7 +343,12 @@ const SceneRoot = ({ eventSource, tier = 'high' }) => {
           pointerEvents: 'none',
         }}
         shadows
-        dpr={dpr}
+        // A phone's own pixel ratio is 2.5-3; every one of those pixels is a
+        // fragment through the planet and atmosphere shaders. Handhelds render
+        // at 1 and let the browser scale, which is the single biggest frame
+        // saving available here — the canvas carries no text, so the softness
+        // costs nothing anyone reads.
+        dpr={handheld ? 1 : dpr}
         eventSource={eventSource ?? fallbackSource}
         eventPrefix="client"
         gl={{

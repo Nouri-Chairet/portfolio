@@ -60,7 +60,9 @@ body {
 }
 
 .panel {
+  /* svh, not vh or dvh — see styles/journey.css. */
   height: 100vh;
+  height: 100svh;
   width: 100%;
 }
 
@@ -132,7 +134,11 @@ body {
   .gallery-hide,
   .lightbox-close,
   .lightbox-nav,
-  .shot {
+  .shot,
+  /* Measured at 29-31px tall on a phone: the four navbar links, which are the
+     site's primary navigation, and the contact email at 19px. */
+  .site-nav-links a,
+  .contact-email {
     min-height: 44px;
     min-width: 44px;
   }
@@ -149,7 +155,9 @@ body {
   .detail-action,
   .project-link,
   .gallery-hide,
-  .hero-skip {
+  .hero-skip,
+  .site-nav-links a,
+  .contact-email {
     display: inline-flex;
     align-items: center;
     justify-content: center;

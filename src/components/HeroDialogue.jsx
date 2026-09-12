@@ -149,7 +149,11 @@ const HeroDialogue = ({ enabled, has3D, reducedMotion }) => {
         className={`hero-talk${hintVisible ? ' is-hinting' : ''}${open ? ' is-open' : ''}`}
         onClick={handleTalk}
         aria-expanded={open}
-        aria-label="Talk to Nouri"
+        /* Only while the label is hidden. With the hint showing, the button
+           has visible text ("Want to talk? Tap me twice."), and an aria-label
+           that does not contain it leaves a speech-input user saying words
+           that match nothing — the label-content-name-mismatch rule. */
+        aria-label={hintVisible ? undefined : 'Talk to Nouri'}
       >
         <span className="hero-talk-hint" aria-hidden={!hintVisible}>
           {hintText}

@@ -8,8 +8,13 @@ import { useScrollProgressRef } from '../hooks/useScrollProgress';
 import {
   CAM_HOME,
   PLANET_RADIUS,
+  PLANET_SCALE_PORTRAIT,
   PLANET_X_FRACTION,
+  PLANET_X_FRACTION_SHORT,
   PLANET_Y,
+  PLANET_Y_PORTRAIT,
+  PORTRAIT_ASPECT,
+  SHORT_VIEWPORT,
   VIEW_DIST,
   cameraAtStop,
   planetZ,
@@ -139,10 +144,15 @@ function ProjectPlanet({ project, index, reducedMotion, onActivate, forced, scal
     // viewport brings the planet toward the centre rather than off the edge.
     // On a narrow screen there is no room beside the copy, so it centres.
     const side = stopSide(index);
-    const restX = aspect < 1 ? CAM_HOME.x : CAM_HOME.x + side * PLANET_X_FRACTION * halfWidth;
-    const restY = CAM_HOME.y + PLANET_Y;
+    const portrait = aspect < PORTRAIT_ASPECT;
+    // A short landscape screen (a phone on its side) gives the copy card most
+    // of the width, so the world moves further toward the edge.
+    const short = !portrait && size.height <= SHORT_VIEWPORT;
+    const xFraction = short ? PLANET_X_FRACTION_SHORT : PLANET_X_FRACTION;
+    const restX = portrait ? CAM_HOME.x : CAM_HOME.x + side * xFraction * halfWidth;
+    const restY = CAM_HOME.y + (portrait ? PLANET_Y_PORTRAIT : PLANET_Y);
     const restZ = planetZ(index);
-    const radius = PLANET_RADIUS * scaleMul;
+    const radius = PLANET_RADIUS * scaleMul * (portrait ? PLANET_SCALE_PORTRAIT : 1);
 
     // Measurement mode: park every planet in front of the camera, opaque.
     if (forced) {

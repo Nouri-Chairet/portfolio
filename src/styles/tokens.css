@@ -50,6 +50,25 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono',
     monospace;
 
+  /* ------------------------------------------------------------ scale ---
+     One fluid type scale, in one place, so a size is chosen once rather than
+     re-derived per stylesheet. Each step is a clamp between a phone value and
+     a desktop value, with the middle term in rem + vw so it grows with the
+     viewport but still responds to the visitor's own font size.
+
+     Components consume these for their BASE size. A few still override inside
+     a media query — the hero panel and the voyage cards trade type size for
+     vertical room on short screens, which is a layout decision the scale
+     cannot know about. */
+  --text-xs: clamp(0.75rem, 0.72rem + 0.12vw, 0.8125rem);
+  --text-sm: clamp(0.8125rem, 0.78rem + 0.18vw, 0.9375rem);
+  --text-base: clamp(0.9375rem, 0.9rem + 0.25vw, 1.09375rem);
+  --text-lg: clamp(1rem, 0.94rem + 0.35vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.13rem + 0.6vw, 1.75rem);
+  --text-2xl: clamp(1.5rem, 1.24rem + 1.3vw, 2.125rem);
+  --text-3xl: clamp(1.75rem, 1.3rem + 2.2vw, 2.75rem);
+  --text-4xl: clamp(2rem, 1.3rem + 3.5vw, 3.6rem);
+
   /* ----------------------------------------------------------- glass ----
      The frosted-glass surface every card on the site is built from: the hero
      skills panel, the project copy, the skills reference and the contact
